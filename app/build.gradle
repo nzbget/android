@@ -1,0 +1,44 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        applicationId "net.nzbget.nzbget"
+        minSdkVersion 10
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+task prepareJni {
+    doLast {
+        copy {
+            from "src/main/jniLibs/armeabi/libdaemon.so"
+            into "src/main/jniLibs/x86"
+        }
+    }
+}
+
+task cleanupJni {
+    doLast {
+        println "**** cleanup, doesn't work :("
+        delete "src/main/jniLibs/x86/libdaemon.so"
+    }
+}
+
+preBuild.dependsOn prepareJni
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:22.1.1'
+}

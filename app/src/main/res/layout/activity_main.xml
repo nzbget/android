@@ -1,0 +1,92 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Daemon Status: not installed"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/statusLabel"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:textColor="@android:color/black" />
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Install Daemon"
+                android:onClick="installDaemon"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:id="@+id/installButton" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start Daemon"
+                android:onClick="startDaemon"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:id="@+id/startButton" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stop Daemon"
+                android:onClick="stopDaemon"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:id="@+id/stopButton" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show Web-Interface"
+                android:onClick="showWebUI"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:id="@+id/showWebUIButton" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Remove Daemon"
+                android:onClick="removeDaemon"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginTop="20dp"
+                android:id="@+id/removeButton" />
+        </TableRow>
+
+    </TableLayout>
+
+</LinearLayout>

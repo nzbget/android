@@ -1,0 +1,81 @@
+#!/system/bin/sh
+
+HOME=/data/data/net.nzbget.nzbget
+DAEMONLOG=$HOME/daemon.log
+PATH=$HOME/xbin:$PATH
+INSTALLER=/sdcard/data/nzbget/installer/nzbget-bin-linux.run
+CONFIGFILE=$HOME/nzbget/nzbget.conf
+
+cd $HOME
+
+SetupBusybox()
+{
+    mkdir -p xbin
+    cd xbin
+    cp ../lib/libbusybox.so ./busybox
+    ./busybox --install -s .
+    cd ..
+}
+
+Configure()
+{
+	sed -e 's:^MainDir=.*:MainDir=/sdcard/data/nzbget:' -i $CONFIGFILE >> $DAEMONLOG 2>&1
+	sed -e 's:^ScriptDir=.*:ScriptDir=/sdcard/data/nzbget/scripts:' -i $CONFIGFILE >> $DAEMONLOG 2>&1
+	sed -e 's:^LockFile=.*:LockFile=${AppDir}/nzbget.lock:' -i $CONFIGFILE >> $DAEMONLOG 2>&1
+}
+
+Install()
+{
+	echo "Installing daemon" > $DAEMONLOG
+	SetupBusybox
+
+	if test -f $CONFIGFILE; then
+		CONFIG_EXISTS=yes
+	fi
+
+	sh $INSTALLER --destdir $HOME/nzbget >> $DAEMONLOG 2>&1
+	if test $? -ne 0; then
+		echo "Installation failed" >> $DAEMONLOG
+		exit 1
+	fi
+
+	echo "Installation successful" >> $DAEMONLOG
+
+	if test "$CONFIG_EXISTS" = ""; then
+		Configure
+		echo "Configuration successful" >> $DAEMONLOG
+	fi
+}
+
+Start()
+{
+	echo "Starting daemon" > $DAEMONLOG
+	$HOME/nzbget/nzbget -c $HOME/nzbget/nzbget.conf -D >> $DAEMONLOG 2>&1
+}
+
+Stop()
+{
+	echo "Stopping daemon" > $DAEMONLOG
+	$HOME/nzbget/nzbget -c $HOME/nzbget/nzbget.conf -Q >> $DAEMONLOG 2>&1
+}
+
+Remove()
+{
+	Stop
+	rm -r nzbget >> $DAEMONLOG 2>&1
+}
+
+case $1 in
+	install)
+		Install
+		;;
+	remove)
+		Remove
+		;;
+	start)
+		Start
+		;;
+	stop)
+		Stop
+		;;
+esac

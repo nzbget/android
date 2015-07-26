@@ -1,0 +1,101 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Choose NZBGet version to install:"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:id="@+id/titleLabel" />
+
+    <TableLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Latest stable (Recommended)"
+            android:onClick="installDaemon"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:id="@+id/stableReleaseButton" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Latest stable debug"
+            android:onClick="installDaemon"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:id="@+id/stableDebugButton" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Latest testing"
+            android:onClick="installDaemon"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:id="@+id/testingReleaseButton" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Latest testing debug"
+            android:onClick="installDaemon"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:id="@+id/testingDebugButton" />
+    </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Custom"
+                android:onClick="installCustom"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:id="@+id/customButton" />
+        </TableRow>
+
+    </TableLayout>
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:text="Installation requires Internet connection to download daemon package (up to 60 MB)."
+    android:layout_gravity="center_horizontal"
+    android:textAlignment="gravity"
+    android:gravity="center_horizontal"
+    android:padding="10dp"
+    android:layout_marginTop="20dp" />
+
+</LinearLayout>
