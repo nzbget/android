@@ -36,10 +36,18 @@ public class InstallActivity extends ActionBarActivity {
     private enum InstallerKind { STABLE_RELEASE, STABLE_DEBUG, TESTING_RELEASE, TESTING_DEBUG }
 
     private boolean downloading = false;
+    private boolean installing = false;
     private InstallerKind installerKind;
     private String downloadName;
     private long downloadId;
     private String downloadUrl;
+
+    @Override
+    public void onBackPressed() {
+        if (!(downloading || installing)) {
+            super.onBackPressed();
+        }
+    }
 
     private void setStatusText(String text) {
         if (text == null) {
@@ -91,9 +99,9 @@ public class InstallActivity extends ActionBarActivity {
             installFile(downloadName);
         } else {
             MessageActivity.showErrorMessage(this, "NZBGet daemon installer", "Could not find NZBGet daemon installer in Download-directory.", null);
+            enableButtons(true);
+            setStatusText(null);
         }
-        enableButtons(true);
-        setStatusText(null);
     }
 
     private BroadcastReceiver onDownloadFinishReceiver;
@@ -170,13 +178,15 @@ public class InstallActivity extends ActionBarActivity {
         }
         catch (IOException e) {
             MessageActivity.showErrorMessage(this, "NZBGet daemon installer", "Could not read version info:" + e.getMessage(), null);
+            return;
         }
 
-        if (downloadUrl != null) {
-            downloadInstaller();
-        } else {
+        if (downloadUrl == null) {
             MessageActivity.showErrorMessage(this, "NZBGet daemon installer", "Could not read version info: file format error.", null);
+            return;
         }
+
+        downloadInstaller();
     }
 
     private void downloadInstaller() {
@@ -242,6 +252,8 @@ public class InstallActivity extends ActionBarActivity {
     }
 
     protected void downloadCompleted(long downloadId) {
+        downloading = false;
+
         Log.i("InstallActivity", "download installer completed");
         try {
             unregisterReceiver(onDownloadFinishReceiver);
@@ -250,17 +262,15 @@ public class InstallActivity extends ActionBarActivity {
             //Patch for bug: http://code.google.com/p/android/issues/detail?id=6191
         }
 
-        boolean ok = false;
-        if (validDownload(downloadId)) {
-            Log.i("InstallActivity", "download installer successful");
-            installFile(downloadName);
-        } else {
+        if (!validDownload(downloadId)) {
             MessageActivity.showErrorMessage(this, "NZBGet daemon installer", "Download failed.", null);
+            setStatusText(null);
+            enableButtons(true);
+            return;
         }
 
-        setStatusText(null);
-        enableButtons(true);
-        downloading = false;
+        Log.i("InstallActivity", "download installer successful");
+        installFile(downloadName);
     }
 
     private boolean validDownload(long downloadId) {
@@ -287,31 +297,64 @@ public class InstallActivity extends ActionBarActivity {
     }
 
     private void installFile(String downloadName) {
-        try {
-            new File("/sdcard/data/nzbget/installer").mkdirs();
-            File dest = new File("/sdcard/data/nzbget/installer/nzbget-bin-linux.run");
-            dest.delete();
-            copy(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + downloadName), dest);
-        } catch (IOException e) {
-            MessageActivity.showErrorMessage(this, "NZBGet daemon installer", "File copy failed.", null);
-            return;
-        }
+        setStatusText("Installing...");
 
-        install();
+        installing = true;
+        InstallTask task = new InstallTask(this, downloadName);
+        Thread thread = new Thread(task);
+        thread.start();
     }
 
-    private void install() {
-        setStatusText("Installing...");
-        boolean ok = Daemon.getInstance().install();
-        if (ok) {
-            MessageActivity.showOkMessage(this, "Installation", "NZBGet daemon has been successfully installed.",
-                    new MessageActivity.OnClickListener() {
-                        public void onClick() {
-                            finish();
-                        }
-                    });
-        } else {
-            MessageActivity.showLogMessage(this, "NZBGet daemon installation failed.");
+    private void installCompleted(final boolean ok, final String errMessage) {
+        installing = false;
+        final InstallActivity activity = this;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (ok) {
+                    MessageActivity.showOkMessage(activity, "Installation", "NZBGet daemon has been successfully installed.",
+                            new MessageActivity.OnClickListener() {
+                                public void onClick() {
+                                    finish();
+                                }
+                            });
+                } else if (errMessage != null) {
+                    MessageActivity.showErrorMessage(activity, "NZBGet daemon installer", errMessage, null);
+                } else {
+                    MessageActivity.showLogMessage(activity, "NZBGet daemon installation failed.");
+                }
+
+                enableButtons(true);
+                setStatusText(null);
+            }
+        });
+    }
+
+    private class InstallTask implements Runnable {
+
+        private InstallActivity activity;
+        public String downloadName;
+
+        public InstallTask(InstallActivity activity, String downloadName) {
+            this.activity = activity;
+            this.downloadName = downloadName;
+        }
+
+        @Override
+        public void run() {
+            try {
+                new File("/sdcard/data/nzbget/installer").mkdirs();
+                File dest = new File("/sdcard/data/nzbget/installer/nzbget-bin-linux.run");
+                dest.delete();
+                copy(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + downloadName), dest);
+            } catch (IOException e) {
+                activity.installCompleted(false, "File copy failed.");
+                return;
+            }
+
+            boolean ok = Daemon.getInstance().install();
+            activity.installCompleted(ok, null);
         }
     }
 }
