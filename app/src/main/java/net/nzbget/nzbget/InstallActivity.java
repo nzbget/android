@@ -64,6 +64,12 @@ public class InstallActivity extends ActionBarActivity {
         findViewById(R.id.customButton).setEnabled(enabled);
     }
 
+    private void finished() {
+        setStatusText(null);
+        enableButtons(true);
+        downloading = false;
+    }
+
     public void installDaemon(View view) {
         setStatusText("Downloading installer package...");
 
@@ -98,9 +104,9 @@ public class InstallActivity extends ActionBarActivity {
         if (downloadName != null) {
             installFile(downloadName);
         } else {
-            MessageActivity.showErrorMessage(this, "NZBGet daemon installer", "Could not find NZBGet daemon installer in Download-directory.", null);
-            enableButtons(true);
-            setStatusText(null);
+            MessageActivity.showErrorMessage(this, "NZBGet daemon installer",
+                    "Could not find NZBGet daemon installer in Download-directory.", null);
+            finished();
         }
     }
 
@@ -177,12 +183,23 @@ public class InstallActivity extends ActionBarActivity {
             file.delete();
         }
         catch (IOException e) {
-            MessageActivity.showErrorMessage(this, "NZBGet daemon installer", "Could not read version info:" + e.getMessage(), null);
+            MessageActivity.showErrorMessage(this, "NZBGet daemon installer",
+                    "Could not read version info:" + e.getMessage(), null);
+            finished();
+            return;
+        }
+
+        if (downloadUrl.indexOf("nzbget-15.") > -1) {
+            MessageActivity.showErrorMessage(this, "NZBGet daemon installer",
+                    "This installer requires version 16.0, which seems to be not released yet. Please install the testing version instead.", null);
+            finished();
             return;
         }
 
         if (downloadUrl == null) {
-            MessageActivity.showErrorMessage(this, "NZBGet daemon installer", "Could not read version info: file format error.", null);
+            MessageActivity.showErrorMessage(this, "NZBGet daemon installer",
+                    "Could not read version info: file format error.", null);
+            finished();
             return;
         }
 
@@ -246,9 +263,7 @@ public class InstallActivity extends ActionBarActivity {
             //Patch for bug: http://code.google.com/p/android/issues/detail?id=6191
         }
 
-        setStatusText(null);
-        enableButtons(true);
-        downloading = false;
+        finished();
     }
 
     protected void downloadCompleted(long downloadId) {
@@ -264,8 +279,7 @@ public class InstallActivity extends ActionBarActivity {
 
         if (!validDownload(downloadId)) {
             MessageActivity.showErrorMessage(this, "NZBGet daemon installer", "Download failed.", null);
-            setStatusText(null);
-            enableButtons(true);
+            finished();
             return;
         }
 
@@ -325,8 +339,7 @@ public class InstallActivity extends ActionBarActivity {
                     MessageActivity.showLogMessage(activity, "NZBGet daemon installation failed.");
                 }
 
-                enableButtons(true);
-                setStatusText(null);
+                finished();
             }
         });
     }
