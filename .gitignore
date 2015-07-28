@@ -6,3 +6,4 @@
 /build
 /captures
 app/src/main/jniLibs/x86/libdaemon.so
+*.apk
