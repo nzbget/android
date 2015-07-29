@@ -15,14 +15,17 @@ import java.io.FileReader;
 import java.io.IOException;
 
 
-public class MessageActivity extends ActionBarActivity {
+public class MessageActivity extends ActionBarActivity
+{
 
-    public interface OnClickListener {
+    public interface OnClickListener
+    {
         public void onClick();
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
         String title = getIntent().getStringExtra("title");
@@ -30,44 +33,54 @@ public class MessageActivity extends ActionBarActivity {
         loadLog();
     }
 
-    private void loadLog() {
+    private void loadLog()
+    {
         File file = new File("/data/data/net.nzbget.nzbget/daemon.log");
         StringBuilder text = new StringBuilder();
-        try {
+        try
+        {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
-            while ((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null)
+            {
                 text.append(line);
                 text.append('\n');
             }
             br.close();
         }
-        catch (IOException e) {
+        catch (IOException e)
+        {
             text.append("Could not load log-file.");
         }
 
         ((TextView)findViewById(R.id.messageText)).setText(text.toString().trim());
     }
 
-    public void dismiss(View view) {
+    public void dismiss(View view)
+    {
         finish();
     }
 
-    public static void showLogMessage(Context context, String title) {
+    public static void showLogMessage(Context context, String title)
+    {
         Intent intent = new Intent(context, MessageActivity.class);
         intent.putExtra("title", title);
         context.startActivity(intent);
     }
 
-    public static void showOkMessage(Context context, String title, String text, final OnClickListener click) {
+    public static void showOkMessage(Context context, String title, String text, final OnClickListener click)
+    {
         AlertDialog.Builder adb = new AlertDialog.Builder(context);
         adb.setTitle(title);
         adb.setMessage(text);
         adb.setIcon(android.R.drawable.ic_dialog_info);
         adb.setCancelable(true);
-        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                if (click != null) {
+        adb.setPositiveButton("OK", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
+                if (click != null)
+                {
                     click.onClick();
                 }
             }
@@ -76,15 +89,19 @@ public class MessageActivity extends ActionBarActivity {
         alert.show();
     }
 
-    public static void showErrorMessage(Context context, String title, String text, final OnClickListener click) {
+    public static void showErrorMessage(Context context, String title, String text, final OnClickListener click)
+    {
         AlertDialog.Builder adb = new AlertDialog.Builder(context);
         adb.setTitle(title);
         adb.setMessage(text);
         adb.setIcon(android.R.drawable.ic_dialog_info);
         adb.setCancelable(true);
-        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                if (click != null) {
+        adb.setPositiveButton("OK", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
+                if (click != null)
+                {
                     click.onClick();
                 }
             }

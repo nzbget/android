@@ -15,24 +15,30 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity
+{
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         updateStatus();
         new Timer().schedule(new UpdateTimeTask(), 0, 1000);
     }
 
-    class UpdateTimeTask extends TimerTask {
-        public void run() {
+    class UpdateTimeTask extends TimerTask
+    {
+        public void run()
+        {
             statusHandler.post(statusRunnable);
         }
     }
 
-    final Runnable statusRunnable = new Runnable() {
-        public void run() {
+    final Runnable statusRunnable = new Runnable()
+    {
+        public void run()
+        {
             updateStatus();
         }
     };
@@ -41,10 +47,13 @@ public class MainActivity extends ActionBarActivity {
 
     private Daemon.Status lastStatus;
 
-    public void updateStatus() {
+    public void updateStatus()
+    {
         Daemon.Status curStatus = Daemon.getInstance().status();
-        if (curStatus != lastStatus) {
-            switch (curStatus) {
+        if (curStatus != lastStatus)
+        {
+            switch (curStatus)
+            {
                 case STATUS_NOTINSTALLED:
                     findViewById(R.id.startButton).setEnabled(false);
                     findViewById(R.id.stopButton).setEnabled(false);
@@ -76,49 +85,66 @@ public class MainActivity extends ActionBarActivity {
     static final int UPDATE_STATUS_REQUEST = 1;
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == UPDATE_STATUS_REQUEST) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == UPDATE_STATUS_REQUEST)
+        {
             updateStatus();
         }
     }
-    public void installDaemon(View view) {
+    public void installDaemon(View view)
+    {
         Intent intent = new Intent(this, InstallActivity.class);
         startActivityForResult(intent, UPDATE_STATUS_REQUEST);
     }
 
-    public void startDaemon(View view) {
+    public void startDaemon(View view)
+    {
         boolean ok = Daemon.getInstance().start();
-        if (ok) {
+        if (ok)
+        {
             MessageActivity.showOkMessage(this, "Start", "NZBGet daemon has been successfully started and now is running in background.", null);
-        } else {
+        }
+        else
+        {
             MessageActivity.showLogMessage(this, "NZBGet daemon could not be started.");
         }
         updateStatus();
     }
 
-    public void stopDaemon(View view) {
+    public void stopDaemon(View view)
+    {
         boolean ok = Daemon.getInstance().stop();
-        if (ok) {
+        if (ok)
+        {
             MessageActivity.showOkMessage(this, "Stop", "NZBGet daemon is now shutting down.", null);
-        } else {
+        }
+        else
+        {
             MessageActivity.showLogMessage(this, "NZBGet daemon could not be stopped.");
         }
         updateStatus();
     }
 
-    public void removeDaemon(View view) {
+    public void removeDaemon(View view)
+    {
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle("Daemon Removal");
         adb.setMessage("Really remove NZBGet daemon?\n\nThe daemon and configuration file will be removed. All downloaded files (on SDCard) remain.");
         adb.setIcon(android.R.drawable.ic_dialog_alert);
         adb.setCancelable(true);
         final Context me = this;
-        adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+        adb.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
                 boolean ok = Daemon.getInstance().remove();
-                if (ok) {
+                if (ok)
+                {
                     MessageActivity.showOkMessage(me, "Daemon Removal", "NZBGet daemon has been successfully removed.", null);
-                } else {
+                }
+                else
+                {
                     MessageActivity.showLogMessage(me, "NZBGet daemon removal failed.");
                 }
                 updateStatus();
@@ -129,7 +155,8 @@ public class MainActivity extends ActionBarActivity {
         alert.show();
     }
 
-    public void showWebUI(View view) {
+    public void showWebUI(View view)
+    {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://localhost:6789"));
         startActivity(browserIntent);
     }

@@ -4,7 +4,8 @@ import android.util.Log;
 
 import java.io.File;
 
-public class Daemon {
+public class Daemon
+{
 
     private static Daemon instance = null;
     private static String DAEMONSH = "/data/data/net.nzbget.nzbget/lib/libdaemon.so";
@@ -38,12 +39,14 @@ public class Daemon {
     public boolean exec(String cmdLine)
     {
         boolean ok = false;
-        try {
+        try
+        {
             Process proc = Runtime.getRuntime().exec(cmdLine);
             proc.waitFor();
             ok = proc.exitValue() == 0;
         }
-        catch (Exception e){
+        catch (Exception e)
+        {
             Log.e("Daemon", "Command '" + cmdLine + "' failed", e);
         }
         return ok;

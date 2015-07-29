@@ -25,10 +25,12 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 
 
-public class InstallActivity extends ActionBarActivity {
+public class InstallActivity extends ActionBarActivity
+{
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_install);
     }
@@ -43,20 +45,25 @@ public class InstallActivity extends ActionBarActivity {
     private String downloadUrl;
 
     @Override
-    public void onBackPressed() {
-        if (!(downloading || installing)) {
+    public void onBackPressed()
+    {
+        if (!(downloading || installing))
+        {
             super.onBackPressed();
         }
     }
 
-    private void setStatusText(String text) {
-        if (text == null) {
+    private void setStatusText(String text)
+    {
+        if (text == null)
+        {
             text = "Choose NZBGet version to install:";
         }
         ((TextView)findViewById(R.id.titleLabel)).setText(text);
     }
 
-    private void enableButtons(boolean enabled) {
+    private void enableButtons(boolean enabled)
+    {
         findViewById(R.id.stableReleaseButton).setEnabled(enabled);
         findViewById(R.id.stableDebugButton).setEnabled(enabled);
         findViewById(R.id.testingReleaseButton).setEnabled(enabled);
@@ -64,22 +71,31 @@ public class InstallActivity extends ActionBarActivity {
         findViewById(R.id.customButton).setEnabled(enabled);
     }
 
-    private void finished() {
+    private void finished()
+    {
         setStatusText(null);
         enableButtons(true);
         downloading = false;
     }
 
-    public void installDaemon(View view) {
+    public void installDaemon(View view)
+    {
         setStatusText("Downloading installer package...");
 
-        if (view.getId() == R.id.stableReleaseButton) {
+        if (view.getId() == R.id.stableReleaseButton)
+        {
             installerKind = InstallerKind.STABLE_RELEASE;
-        } else if (view.getId() == R.id.stableDebugButton) {
+        }
+        else if (view.getId() == R.id.stableDebugButton)
+        {
             installerKind = InstallerKind.STABLE_DEBUG;
-        } else if (view.getId() == R.id.testingReleaseButton) {
+        }
+        else if (view.getId() == R.id.testingReleaseButton)
+        {
             installerKind = InstallerKind.TESTING_RELEASE;
-        } else if (view.getId() == R.id.testingDebugButton) {
+        }
+        else if (view.getId() == R.id.testingDebugButton)
+        {
             installerKind = InstallerKind.TESTING_DEBUG;
         }
 
@@ -88,22 +104,28 @@ public class InstallActivity extends ActionBarActivity {
         downloadInfo();
     }
 
-    public void installCustom(View view) {
+    public void installCustom(View view)
+    {
         String downloadName = null;
         File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File[] files = dir.listFiles();
-        for (File inFile : files) {
+        for (File inFile : files)
+        {
             String curName = inFile.getName();
             if (curName.startsWith("nzbget-") && curName.endsWith(".run") &&
-                    (downloadName == null || downloadName.compareTo(curName) > 0)) {
+                    (downloadName == null || downloadName.compareTo(curName) > 0))
+            {
                 downloadName = curName;
             }
         }
 
         enableButtons(false);
-        if (downloadName != null) {
+        if (downloadName != null)
+        {
             installFile(downloadName);
-        } else {
+        }
+        else
+        {
             MessageActivity.showErrorMessage(this, "NZBGet daemon installer",
                     "Could not find NZBGet daemon installer in Download-directory.", null);
             finished();
@@ -113,7 +135,8 @@ public class InstallActivity extends ActionBarActivity {
     private BroadcastReceiver onDownloadFinishReceiver;
     private BroadcastReceiver onNotificationClickReceiver;
 
-    private void downloadInfo() {
+    private void downloadInfo()
+    {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "nzbget-version-linux.json");
         file.delete();
 
@@ -124,16 +147,20 @@ public class InstallActivity extends ActionBarActivity {
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "nzbget-version-linux.json");
 
-        registerReceiver(onDownloadFinishReceiver = new BroadcastReceiver() {
+        registerReceiver(onDownloadFinishReceiver = new BroadcastReceiver()
+        {
             @Override
-            public void onReceive(Context context, Intent i) {
+            public void onReceive(Context context, Intent i)
+            {
                 infoCompleted(i.getExtras().getLong(DownloadManager.EXTRA_DOWNLOAD_ID));
             }
         }, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
-        registerReceiver(onNotificationClickReceiver = new BroadcastReceiver() {
+        registerReceiver(onNotificationClickReceiver = new BroadcastReceiver()
+        {
             @Override
-            public void onReceive(Context context, Intent intent) {
+            public void onReceive(Context context, Intent intent)
+            {
                 downloadTouched();
             }
         }, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
@@ -143,12 +170,16 @@ public class InstallActivity extends ActionBarActivity {
         downloadId = manager.enqueue(request);
     }
 
-    private void infoCompleted(long aLong) {
+    private void infoCompleted(long aLong)
+    {
         Log.i("InstallActivity", "download info completed");
-        try {
+        try
+        {
             unregisterReceiver(onDownloadFinishReceiver);
             unregisterReceiver(onNotificationClickReceiver);
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e)
+        {
             //Patch for bug: http://code.google.com/p/android/issues/detail?id=6191
         }
 
@@ -156,19 +187,23 @@ public class InstallActivity extends ActionBarActivity {
         downloadName = null;
 
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "nzbget-version-linux.json");
-        try {
+        try
+        {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
-            while ((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null)
+            {
                 if (((installerKind == InstallerKind.STABLE_RELEASE ||
                         installerKind == InstallerKind.STABLE_DEBUG) &&
                         line.indexOf("stable-download") > -1) ||
                         ((installerKind == InstallerKind.TESTING_RELEASE ||
                                 installerKind == InstallerKind.TESTING_DEBUG) &&
-                                line.indexOf("testing-download") > -1)) {
+                                line.indexOf("testing-download") > -1))
+                {
                     downloadUrl = line.substring(line.indexOf('"', line.indexOf(":")) + 1, line.length() - 2);
                     if (installerKind == InstallerKind.STABLE_DEBUG ||
-                            installerKind == InstallerKind.TESTING_DEBUG) {
+                            installerKind == InstallerKind.TESTING_DEBUG)
+                    {
                         downloadUrl = downloadUrl.substring(0, downloadUrl.lastIndexOf(".run")) + "-debug.run";
                     }
                     Log.i("InstallActivity", "URL: " + downloadUrl);
@@ -182,21 +217,24 @@ public class InstallActivity extends ActionBarActivity {
             br.close();
             file.delete();
         }
-        catch (IOException e) {
+        catch (IOException e)
+        {
             MessageActivity.showErrorMessage(this, "NZBGet daemon installer",
                     "Could not read version info:" + e.getMessage(), null);
             finished();
             return;
         }
 
-        if (downloadUrl.indexOf("nzbget-15.") > -1) {
+        if (downloadUrl.indexOf("nzbget-15.") > -1)
+        {
             MessageActivity.showErrorMessage(this, "NZBGet daemon installer",
                     "This installer requires version 16.0, which seems to be not released yet. Please install the testing version instead.", null);
             finished();
             return;
         }
 
-        if (downloadUrl == null) {
+        if (downloadUrl == null)
+        {
             MessageActivity.showErrorMessage(this, "NZBGet daemon installer",
                     "Could not read version info: file format error.", null);
             finished();
@@ -206,7 +244,8 @@ public class InstallActivity extends ActionBarActivity {
         downloadInstaller();
     }
 
-    private void downloadInstaller() {
+    private void downloadInstaller()
+    {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), downloadName);
         file.delete();
 
@@ -216,16 +255,20 @@ public class InstallActivity extends ActionBarActivity {
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, downloadName);
 
-        registerReceiver(onDownloadFinishReceiver = new BroadcastReceiver() {
+        registerReceiver(onDownloadFinishReceiver = new BroadcastReceiver()
+        {
             @Override
-            public void onReceive(Context context, Intent i) {
+            public void onReceive(Context context, Intent i)
+            {
                 downloadCompleted(i.getExtras().getLong(DownloadManager.EXTRA_DOWNLOAD_ID));
             }
         }, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
-        registerReceiver(onNotificationClickReceiver = new BroadcastReceiver() {
+        registerReceiver(onNotificationClickReceiver = new BroadcastReceiver()
+        {
             @Override
-            public void onReceive(Context context, Intent intent) {
+            public void onReceive(Context context, Intent intent)
+            {
                 downloadTouched();
             }
         }, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
@@ -235,15 +278,18 @@ public class InstallActivity extends ActionBarActivity {
         downloadId = manager.enqueue(request);
     }
 
-    private void downloadTouched() {
+    private void downloadTouched()
+    {
         Log.i("InstallActivity", "Cancelling download");
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle("NZBGet daemon installer");
         adb.setMessage("Cancel download and installation?");
         adb.setIcon(android.R.drawable.ic_dialog_alert);
         adb.setCancelable(true);
-        adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+        adb.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
                 cancelDownload();
             }
         });
@@ -252,32 +298,41 @@ public class InstallActivity extends ActionBarActivity {
         alert.show();
     }
 
-    private void cancelDownload() {
+    private void cancelDownload()
+    {
         DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         manager.remove(downloadId);
 
-        try {
+        try
+        {
             unregisterReceiver(onDownloadFinishReceiver);
             unregisterReceiver(onNotificationClickReceiver);
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e)
+        {
             //Patch for bug: http://code.google.com/p/android/issues/detail?id=6191
         }
 
         finished();
     }
 
-    protected void downloadCompleted(long downloadId) {
+    protected void downloadCompleted(long downloadId)
+    {
         downloading = false;
 
         Log.i("InstallActivity", "download installer completed");
-        try {
+        try
+        {
             unregisterReceiver(onDownloadFinishReceiver);
             unregisterReceiver(onNotificationClickReceiver);
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e)
+        {
             //Patch for bug: http://code.google.com/p/android/issues/detail?id=6191
         }
 
-        if (!validDownload(downloadId)) {
+        if (!validDownload(downloadId))
+        {
             MessageActivity.showErrorMessage(this, "NZBGet daemon installer", "Download failed.", null);
             finished();
             return;
@@ -287,20 +342,24 @@ public class InstallActivity extends ActionBarActivity {
         installFile(downloadName);
     }
 
-    private boolean validDownload(long downloadId) {
+    private boolean validDownload(long downloadId)
+    {
         //Verify if download is a success
         DownloadManager manager = (DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
         Cursor c = manager.query(new DownloadManager.Query().setFilterById(downloadId));
-        if (c.moveToFirst()) {
+        if (c.moveToFirst())
+        {
             int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
-            if (status == DownloadManager.STATUS_SUCCESSFUL) {
+            if (status == DownloadManager.STATUS_SUCCESSFUL)
+            {
                 return true;
             }
         }
         return false;
     }
 
-    public void copy(File src, File dst) throws IOException {
+    public void copy(File src, File dst) throws IOException
+    {
         FileInputStream inStream = new FileInputStream(src);
         FileOutputStream outStream = new FileOutputStream(dst);
         FileChannel inChannel = inStream.getChannel();
@@ -310,7 +369,8 @@ public class InstallActivity extends ActionBarActivity {
         outStream.close();
     }
 
-    private void installFile(String downloadName) {
+    private void installFile(String downloadName)
+    {
         setStatusText("Installing...");
 
         installing = true;
@@ -319,23 +379,33 @@ public class InstallActivity extends ActionBarActivity {
         thread.start();
     }
 
-    private void installCompleted(final boolean ok, final String errMessage) {
+    private void installCompleted(final boolean ok, final String errMessage)
+    {
         installing = false;
         final InstallActivity activity = this;
 
-        runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable()
+        {
             @Override
-            public void run() {
-                if (ok) {
+            public void run()
+            {
+                if (ok)
+                {
                     MessageActivity.showOkMessage(activity, "Installation", "NZBGet daemon has been successfully installed.",
-                            new MessageActivity.OnClickListener() {
-                                public void onClick() {
+                            new MessageActivity.OnClickListener()
+                            {
+                                public void onClick()
+                                {
                                     finish();
                                 }
                             });
-                } else if (errMessage != null) {
+                }
+                else if (errMessage != null)
+                {
                     MessageActivity.showErrorMessage(activity, "NZBGet daemon installer", errMessage, null);
-                } else {
+                }
+                else
+                {
                     MessageActivity.showLogMessage(activity, "NZBGet daemon installation failed.");
                 }
 
@@ -344,24 +414,30 @@ public class InstallActivity extends ActionBarActivity {
         });
     }
 
-    private class InstallTask implements Runnable {
+    private class InstallTask implements Runnable
+    {
 
         private InstallActivity activity;
         public String downloadName;
 
-        public InstallTask(InstallActivity activity, String downloadName) {
+        public InstallTask(InstallActivity activity, String downloadName)
+        {
             this.activity = activity;
             this.downloadName = downloadName;
         }
 
         @Override
-        public void run() {
-            try {
+        public void run()
+        {
+            try
+            {
                 new File("/sdcard/data/nzbget/installer").mkdirs();
                 File dest = new File("/sdcard/data/nzbget/installer/nzbget-bin-linux.run");
                 dest.delete();
                 copy(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + downloadName), dest);
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 activity.installCompleted(false, "File copy failed.");
                 return;
             }
