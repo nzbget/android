@@ -40,16 +40,15 @@ public class Daemon
 
         try
         {
-            Process process = Runtime.getRuntime().exec("ps nzbget");
+            Process process = Runtime.getRuntime().exec("ps");
             BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            int num = 0;
-            while (br.readLine() != null)
+            String line;
+            while ((line = br.readLine()) != null)
             {
-                num++;
-            }
-            if (num > 1)
-            {
-                return Status.STATUS_RUNNING;
+                if (line.indexOf("/data/data/net.nzbget.nzbget/nzbget/nzbget") > -1)
+                {
+                    return Status.STATUS_RUNNING;
+                }
             }
         }
         catch (IOException e)
@@ -60,39 +59,52 @@ public class Daemon
         return Status.STATUS_STOPPED;
     }
 
-    public boolean exec(String cmdLine)
+    public boolean execDaemon(String command)
     {
         boolean ok = false;
         try
         {
-            Process proc = Runtime.getRuntime().exec(cmdLine);
-            proc.waitFor();
-            ok = proc.exitValue() == 0;
+            ProcessBuilder builder = new ProcessBuilder(DAEMONSH, command);
+            builder.redirectErrorStream(true);
+            Process process = builder.start();
+
+            lastLog = "";
+            String line;
+            BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            while ((line = br.readLine()) != null)
+            {
+                lastLog += line + "\n";
+            }
+
+            process.waitFor();
+            ok = process.exitValue() == 0;
         }
         catch (Exception e)
         {
-            Log.e("Daemon", "Command '" + cmdLine + "' failed", e);
+            Log.e("Daemon", "Command '" + command + "' failed", e);
         }
         return ok;
     }
 
+    public String lastLog;
+
     public boolean install()
     {
-        return exec(DAEMONSH + " install");
+        return execDaemon("install");
     }
 
     public boolean remove()
     {
-        return exec(DAEMONSH + " remove");
+        return execDaemon("remove");
     }
 
     public boolean start()
     {
-        return exec(DAEMONSH + " start");
+        return execDaemon("start");
     }
 
     public boolean stop()
     {
-        return exec(DAEMONSH + " stop");
+        return execDaemon("stop");
     }
 }

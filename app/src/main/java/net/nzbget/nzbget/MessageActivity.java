@@ -30,30 +30,8 @@ public class MessageActivity extends ActionBarActivity
         setContentView(R.layout.activity_message);
         String title = getIntent().getStringExtra("title");
         ((TextView)findViewById(R.id.titleLabel)).setText(title);
-        loadLog();
-    }
-
-    private void loadLog()
-    {
-        File file = new File("/data/data/net.nzbget.nzbget/daemon.log");
-        StringBuilder text = new StringBuilder();
-        try
-        {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = br.readLine()) != null)
-            {
-                text.append(line);
-                text.append('\n');
-            }
-            br.close();
-        }
-        catch (IOException e)
-        {
-            text.append("Could not load log-file.");
-        }
-
-        ((TextView)findViewById(R.id.messageText)).setText(text.toString().trim());
+        String text = Daemon.getInstance().lastLog;
+        ((TextView)findViewById(R.id.messageText)).setText(text);
     }
 
     public void dismiss(View view)

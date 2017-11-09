@@ -109,13 +109,13 @@ public class InstallActivity extends ActionBarActivity
         String downloadName = null;
         File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File[] files = dir.listFiles();
-        for (File inFile : files)
-        {
-            String curName = inFile.getName();
-            if (curName.startsWith("nzbget-") && curName.endsWith(".run") &&
-                    (downloadName == null || downloadName.compareTo(curName) > 0))
-            {
-                downloadName = curName;
+        if (files != null) {
+            for (File inFile : files) {
+                String curName = inFile.getName();
+                if (curName.startsWith("nzbget-") && curName.endsWith(".run") &&
+                        (downloadName == null || downloadName.compareTo(curName) > 0)) {
+                    downloadName = curName;
+                }
             }
         }
 

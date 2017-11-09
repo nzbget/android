@@ -1,7 +1,8 @@
 #!/system/bin/sh
 
+set -o errexit
+
 HOME=/data/data/net.nzbget.nzbget
-DAEMONLOG=$HOME/daemon.log
 PATH=$HOME/xbin:$PATH
 INSTALLER=/sdcard/data/nzbget/installer/nzbget-bin-linux.run
 CONFIGFILE=$HOME/nzbget/nzbget.conf
@@ -10,59 +11,63 @@ cd $HOME
 
 SetupBusybox()
 {
-    mkdir -p xbin
-    cd xbin
-    cp ../lib/libbusybox.so ./busybox
-    ./busybox --install -s .
-    cd ..
+	echo "Preparing busybox tools"
+	mkdir -p xbin
+	cd xbin
+	cp ../lib/libbusybox.so ./busybox
+	./busybox --install -s .
+	cd ..
 }
 
 Configure()
 {
-	sed -e 's:^MainDir=.*:MainDir=/sdcard/data/nzbget:' -i $CONFIGFILE >> $DAEMONLOG 2>&1
-	sed -e 's:^ScriptDir=.*:ScriptDir=/sdcard/data/nzbget/scripts:' -i $CONFIGFILE >> $DAEMONLOG 2>&1
-	sed -e 's:^LockFile=.*:LockFile=${AppDir}/nzbget.lock:' -i $CONFIGFILE >> $DAEMONLOG 2>&1
+	sed -e 's:^MainDir=.*:MainDir=/sdcard/data/nzbget:' -i $CONFIGFILE
+	sed -e 's:^ScriptDir=.*:ScriptDir=/sdcard/data/nzbget/scripts:' -i $CONFIGFILE
+	sed -e 's:^LockFile=.*:LockFile=${AppDir}/nzbget.lock:' -i $CONFIGFILE
 }
 
 Install()
 {
-	echo "Installing daemon" > $DAEMONLOG
+	echo "Installing daemon"
+
 	SetupBusybox
 
 	if test -f $CONFIGFILE; then
 		CONFIG_EXISTS=yes
 	fi
 
-	sh $INSTALLER --destdir $HOME/nzbget >> $DAEMONLOG 2>&1
+	echo "Installing daemon package"
+	sh $INSTALLER --destdir $HOME/nzbget
 	if test $? -ne 0; then
-		echo "Installation failed" >> $DAEMONLOG
+		echo "Installation failed"
 		exit 1
 	fi
 
-	echo "Installation successful" >> $DAEMONLOG
+	echo "Installation successful"
 
 	if test "$CONFIG_EXISTS" = ""; then
 		Configure
-		echo "Configuration successful" >> $DAEMONLOG
+		echo "Configuration successful"
 	fi
 }
 
 Start()
 {
-	echo "Starting daemon" > $DAEMONLOG
-	$HOME/nzbget/nzbget -c $HOME/nzbget/nzbget.conf -D >> $DAEMONLOG 2>&1
+	echo "Starting daemon"
+	$HOME/nzbget/nzbget -c $HOME/nzbget/nzbget.conf -D
 }
 
 Stop()
 {
-	echo "Stopping daemon" > $DAEMONLOG
-	$HOME/nzbget/nzbget -c $HOME/nzbget/nzbget.conf -Q >> $DAEMONLOG 2>&1
+	echo "Stopping daemon"
+	$HOME/nzbget/nzbget -c $HOME/nzbget/nzbget.conf -Q
 }
 
 Remove()
 {
-	Stop
-	rm -r nzbget >> $DAEMONLOG 2>&1
+	echo "Removing daemon"
+	$HOME/nzbget/nzbget -c $HOME/nzbget/nzbget.conf -Q || echo ""
+	rm -r nzbget
 }
 
 case $1 in
