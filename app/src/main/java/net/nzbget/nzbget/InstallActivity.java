@@ -137,15 +137,15 @@ public class InstallActivity extends ActionBarActivity
 
     private void downloadInfo()
     {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "nzbget-version-linux.json");
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "nzbget-version-android.json");
         file.delete();
 
-        String url = "http://nzbget.net/info/nzbget-version-linux.json";
+        String url = "http://nzbget.net/info/nzbget-version-android.json";
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
         request.setTitle("NZBGet daemon installer info");
-        request.setDescription("nzbget-version-linux.json");
+        request.setDescription("nzbget-version-android.json");
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "nzbget-version-linux.json");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "nzbget-version-android.json");
 
         registerReceiver(onDownloadFinishReceiver = new BroadcastReceiver()
         {
@@ -186,7 +186,7 @@ public class InstallActivity extends ActionBarActivity
         downloadUrl = null;
         downloadName = null;
 
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "nzbget-version-linux.json");
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "nzbget-version-android.json");
         try
         {
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -225,10 +225,10 @@ public class InstallActivity extends ActionBarActivity
             return;
         }
 
-        if (downloadUrl.indexOf("nzbget-15.") > -1)
+        if (downloadUrl.indexOf("nzbget-20.") > -1)
         {
             MessageActivity.showErrorMessage(this, "NZBGet daemon installer",
-                    "This installer requires version 16.0, which seems to be not released yet. Please install the testing version instead.", null);
+                    "This installer requires version 21.0, which seems to be not released yet. Please install the testing version instead.", null);
             finished();
             return;
         }
@@ -432,7 +432,7 @@ public class InstallActivity extends ActionBarActivity
             try
             {
                 new File("/sdcard/data/nzbget/installer").mkdirs();
-                File dest = new File("/sdcard/data/nzbget/installer/nzbget-bin-linux.run");
+                File dest = new File("/sdcard/data/nzbget/installer/nzbget-bin-android.run");
                 dest.delete();
                 copy(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + downloadName), dest);
             }

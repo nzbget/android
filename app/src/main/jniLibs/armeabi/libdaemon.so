@@ -4,7 +4,7 @@ set -o errexit
 
 HOME=/data/data/net.nzbget.nzbget
 PATH=$HOME/xbin:$PATH
-INSTALLER=/sdcard/data/nzbget/installer/nzbget-bin-linux.run
+INSTALLER=/sdcard/data/nzbget/installer/nzbget-bin-android.run
 CONFIGFILE=$HOME/nzbget/nzbget.conf
 
 cd $HOME
