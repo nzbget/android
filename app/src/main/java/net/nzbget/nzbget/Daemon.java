@@ -40,7 +40,7 @@ public class Daemon
 
         try
         {
-            Process process = Runtime.getRuntime().exec("ps");
+            Process process = Runtime.getRuntime().exec("/data/data/net.nzbget.nzbget/xbin/ps");
             BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = br.readLine()) != null)
