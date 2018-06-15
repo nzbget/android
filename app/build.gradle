@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "net.nzbget.nzbget"
-        minSdkVersion 10
+        minSdkVersion 21
         targetSdkVersion 22
         versionCode 3
         versionName "2.0"
