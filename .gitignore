@@ -7,3 +7,6 @@
 /captures
 app/src/main/jniLibs/x86/libdaemon.so
 *.apk
+/app/release
+/.idea/caches
+/.idea/codeStyles

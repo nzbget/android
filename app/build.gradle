@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 21
 
     defaultConfig {
         applicationId "net.nzbget.nzbget"
         minSdkVersion 21
-        targetSdkVersion 22
+        targetSdkVersion 21
         versionCode 3
         versionName "2.0"
     }
@@ -39,6 +38,6 @@ task cleanupJni {
 preBuild.dependsOn prepareJni
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.1.1'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:21.0.3'
 }
