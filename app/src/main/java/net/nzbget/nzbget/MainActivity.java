@@ -100,29 +100,17 @@ public class MainActivity extends ActionBarActivity
 
     public void startDaemon(View view)
     {
-        boolean ok = Daemon.getInstance().start();
-        if (ok)
-        {
-            MessageActivity.showOkMessage(this, "Start", "NZBGet daemon has been successfully started and now is running in background.", null);
-        }
-        else
-        {
-            MessageActivity.showLogMessage(this, "NZBGet daemon could not be started.");
-        }
+        Intent intent = new Intent(this, DaemonService.class);
+        intent.putExtra("command", "start");
+        startService(intent);
         updateStatus();
     }
 
     public void stopDaemon(View view)
     {
-        boolean ok = Daemon.getInstance().stop();
-        if (ok)
-        {
-            MessageActivity.showOkMessage(this, "Stop", "NZBGet daemon is now shutting down.", null);
-        }
-        else
-        {
-            MessageActivity.showLogMessage(this, "NZBGet daemon could not be stopped.");
-        }
+        Intent intent = new Intent(this, DaemonService.class);
+        intent.putExtra("command", "stop");
+        startService(intent);
         updateStatus();
     }
 

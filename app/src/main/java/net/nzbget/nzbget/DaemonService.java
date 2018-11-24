@@ -1,17 +1,29 @@
 package net.nzbget.nzbget;
 
-import android.app.IntentService;
+import android.app.Notification;
+import android.app.Service;
 import android.content.Intent;
+import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
-public class DaemonService extends IntentService {
+public class DaemonService extends Service {
 
-    public DaemonService() {
-        super("NzbGetDaemonService");
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setContentTitle(getString(R.string.daemon_name))
+                .setContentText("NZBGet server is running.")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true);
+        Notification notification = builder.build();
+        startForeground(6789, notification);
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        // Handle command
         String command = intent.getExtras().getString("command");
         switch (command) {
             case "start":
@@ -24,14 +36,17 @@ public class DaemonService extends IntentService {
                 showMessage("NZBGet daemon service received an unknown command.");
                 break;
         }
-    }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent,flags,startId);
         // If we get killed, restart and redeliver the intent
         return START_REDELIVER_INTENT;
     }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        // We don't provide binding, so return null
+        return null;
+    }
+
 
     private void startDaemon()
     {
@@ -52,12 +67,12 @@ public class DaemonService extends IntentService {
         if (ok)
         {
             showMessage("NZBGet daemon has been shut down.");
+            stopSelf();
         }
         else
         {
             showMessage("NZBGet daemon could not be stopped.");
         }
-        stopSelf();
     }
 
     private void showMessage(String message) {
