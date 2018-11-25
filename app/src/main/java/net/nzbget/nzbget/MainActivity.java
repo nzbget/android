@@ -4,11 +4,15 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.Timer;
@@ -23,6 +27,17 @@ public class MainActivity extends ActionBarActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // Set autostart switch
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Switch autostartSwitch = (Switch) findViewById(R.id.autostartSwitch);
+        autostartSwitch.setChecked(sharedPreferences.getBoolean("autostart", true));
+        autostartSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                sharedPreferences.edit().putBoolean("autostart", b).commit();
+            }
+        });
+        // Set all other ui elements
         updateStatus();
         new Timer().schedule(new UpdateTimeTask(), 0, 1000);
     }
@@ -100,29 +115,17 @@ public class MainActivity extends ActionBarActivity
 
     public void startDaemon(View view)
     {
-        boolean ok = Daemon.getInstance().start();
-        if (ok)
-        {
-            MessageActivity.showOkMessage(this, "Start", "NZBGet daemon has been successfully started and now is running in background.", null);
-        }
-        else
-        {
-            MessageActivity.showLogMessage(this, "NZBGet daemon could not be started.");
-        }
+        Intent intent = new Intent(this, DaemonService.class);
+        intent.putExtra("command", "start");
+        startService(intent);
         updateStatus();
     }
 
     public void stopDaemon(View view)
     {
-        boolean ok = Daemon.getInstance().stop();
-        if (ok)
-        {
-            MessageActivity.showOkMessage(this, "Stop", "NZBGet daemon is now shutting down.", null);
-        }
-        else
-        {
-            MessageActivity.showLogMessage(this, "NZBGet daemon could not be stopped.");
-        }
+        Intent intent = new Intent(this, DaemonService.class);
+        intent.putExtra("command", "stop");
+        startService(intent);
         updateStatus();
     }
 
