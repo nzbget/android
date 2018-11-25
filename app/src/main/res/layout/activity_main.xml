@@ -87,6 +87,17 @@
                 android:id="@+id/removeButton" />
         </TableRow>
 
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Auto Start Daemon"
+                android:layout_marginTop="20dp"
+                android:id="@+id/autostartSwitch" />
+        </TableRow>
+
     </TableLayout>
 
 </LinearLayout>
