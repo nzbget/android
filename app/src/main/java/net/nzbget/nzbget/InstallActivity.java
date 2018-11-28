@@ -7,11 +7,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -25,7 +27,7 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 
 
-public class InstallActivity extends ActionBarActivity
+public class InstallActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback
 {
 
     @Override
@@ -51,6 +53,32 @@ public class InstallActivity extends ActionBarActivity
         {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+
+        // At least one result must be granted
+        if (grantResults.length < 1) {
+            MessageActivity.showErrorMessage(this, "Permission not granted", "NZBGet needs storage permission to download the daemon.", null);
+            return;
+        }
+        // Verify that each required permission has been granted
+        for (int result : grantResults) {
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                MessageActivity.showErrorMessage(this, "Permission not granted", "NZBGet needs storage permission to download the daemon.", null);
+                return;
+            }
+        }
+
+        // Check that requestCode is in InstallerKind range
+        if (requestCode >= InstallerKind.values().length) {
+            MessageActivity.showErrorMessage(this, "Permission not granted", "NZBGet needs storage permission to download the daemon.", null);
+            return;
+        }
+
+        // Download daemon
+        downloadDaemon(InstallerKind.values()[requestCode]);
     }
 
     private void setStatusText(String text)
@@ -80,25 +108,36 @@ public class InstallActivity extends ActionBarActivity
 
     public void installDaemon(View view)
     {
-        setStatusText("Downloading installer package...");
-
+        InstallerKind chosenInstallerKind = InstallerKind.STABLE_RELEASE;
         if (view.getId() == R.id.stableReleaseButton)
         {
-            installerKind = InstallerKind.STABLE_RELEASE;
+            chosenInstallerKind= InstallerKind.STABLE_RELEASE;
         }
         else if (view.getId() == R.id.stableDebugButton)
         {
-            installerKind = InstallerKind.STABLE_DEBUG;
+            chosenInstallerKind = InstallerKind.STABLE_DEBUG;
         }
         else if (view.getId() == R.id.testingReleaseButton)
         {
-            installerKind = InstallerKind.TESTING_RELEASE;
+            chosenInstallerKind= InstallerKind.TESTING_RELEASE;
         }
         else if (view.getId() == R.id.testingDebugButton)
         {
-            installerKind = InstallerKind.TESTING_DEBUG;
+            chosenInstallerKind = InstallerKind.TESTING_DEBUG;
         }
 
+        // Check storage permission first
+        if (!PermissionManager.isStoragePermissionGranted(this, chosenInstallerKind.ordinal())) {
+            return;
+        }
+
+        setStatusText("Downloading installer package...");
+
+        downloadDaemon(chosenInstallerKind);
+    }
+
+    public void downloadDaemon(InstallerKind installerKind) {
+        this.installerKind = installerKind;
         downloading = true;
         enableButtons(false);
         downloadInfo();

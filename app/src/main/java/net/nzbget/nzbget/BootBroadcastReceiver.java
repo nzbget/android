@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 
 public class BootBroadcastReceiver extends BroadcastReceiver {
 
@@ -18,7 +19,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
                 // Daemon should start on startup
                 Intent serviceIntent = new Intent(context, DaemonService.class);
                 serviceIntent.putExtra("command", "start");
-                context.startService(serviceIntent);
+                ContextCompat.startForegroundService(context, serviceIntent);
             }
         }
     }
