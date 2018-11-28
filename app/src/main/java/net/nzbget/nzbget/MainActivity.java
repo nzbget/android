@@ -8,8 +8,9 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -19,7 +20,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends AppCompatActivity
 {
 
     @Override
@@ -40,6 +41,7 @@ public class MainActivity extends ActionBarActivity
         // Set all other ui elements
         updateStatus();
         new Timer().schedule(new UpdateTimeTask(), 0, 1000);
+        PermissionManager.isStoragePermissionGranted(this, 99);
     }
 
     class UpdateTimeTask extends TimerTask
@@ -117,7 +119,7 @@ public class MainActivity extends ActionBarActivity
     {
         Intent intent = new Intent(this, DaemonService.class);
         intent.putExtra("command", "start");
-        startService(intent);
+        ContextCompat.startForegroundService(this, intent);
         updateStatus();
     }
 
@@ -125,7 +127,7 @@ public class MainActivity extends ActionBarActivity
     {
         Intent intent = new Intent(this, DaemonService.class);
         intent.putExtra("command", "stop");
-        startService(intent);
+        ContextCompat.startForegroundService(this, intent);
         updateStatus();
     }
 

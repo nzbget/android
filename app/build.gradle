@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "net.nzbget.nzbget"
         minSdkVersion 21
-        targetSdkVersion 21
+        targetSdkVersion 28
         versionCode 3
         versionName "2.0"
     }
@@ -39,5 +39,5 @@ preBuild.dependsOn prepareJni
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:21.0.3'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
 }
