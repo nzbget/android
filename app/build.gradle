@@ -15,12 +15,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            lintOptions {
-                // Google Play requires "targetSdkVersion=26" or higher.
-                // Since we don't care about Google Play anyway we use "targetSdkVersion=21" for
-                // easier catching of compatibility errors at compile time.
-                disable 'ExpiredTargetSdkVersion'
-            }
         }
     }
 }
