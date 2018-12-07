@@ -149,20 +149,29 @@ public class HistoryManager {
 
     private void moveFinishedDownload(String downloadDir) {
         // Check if we need to move the download
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mCtx);
-        String pathDefault = sharedPreferences.getString("pathDefault", "");
-        if (!pathDefault.isEmpty()) {
+        String movePath = getPathStringForDownload(downloadDir);
+        if (!movePath.isEmpty()) {
             try {
                 File srcDir = new File(downloadDir);
-                Uri defaultUri = Uri.parse(pathDefault);
+                Uri movetUri = Uri.parse(movePath);
                 Log.i(mLogTag, "srcDir.getName(): "+srcDir.getName());
-                DocumentFile targetDir = DocumentFile.fromTreeUri(mCtx, defaultUri);
+                DocumentFile targetDir = DocumentFile.fromTreeUri(mCtx, movetUri);
                 moveFile(srcDir, targetDir);
                 deleteRecursive(srcDir);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private String getPathStringForDownload(String downloadName) {
+        String pathString = "";
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mCtx);
+        // TODO: Check downloadName if download is movie or tv
+        // For now we are always returning the default path
+        String pathDefault = sharedPreferences.getString("pathDefault", "");
+        pathString = pathDefault;
+        return pathString;
     }
 
     private void deleteRecursive(File fileOrDirectory) {
@@ -183,6 +192,7 @@ public class HistoryManager {
             }
         }
         else {
+            // Create destination file
             DocumentFile file = destFile.createFile("", sourceFile.getName());
             try (InputStream in = new FileInputStream(sourceFile)) {
                 try (OutputStream out = mCtx.getContentResolver().openOutputStream(file.getUri())) {
