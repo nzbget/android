@@ -16,7 +16,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 
 public final class FileUtil {
-    static String TAG="TAG";
     private static final String PRIMARY_VOLUME_NAME = "primary";
 
     @Nullable
