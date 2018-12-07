@@ -35,6 +35,10 @@
             android:label="Install Daemon" >
         </activity>
         <activity
+            android:name=".StorageActivity"
+            android:label="@string/title_activity_storage">
+        </activity>
+        <activity
             android:name=".MessageActivity"
             android:label="Message" >
         </activity>

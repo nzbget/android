@@ -165,4 +165,10 @@ public class MainActivity extends AppCompatActivity
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://localhost:6789"));
         startActivity(browserIntent);
     }
+
+    public void choosePaths(View view)
+    {
+        Intent intent = new Intent(this, StorageActivity.class);
+        startActivity(intent);
+    }
 }
