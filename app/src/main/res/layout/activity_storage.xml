@@ -110,7 +110,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="On external storage, apps are only allowed to write the the app specific folder (e. g. '/storage/XXXX-XXXX/Android/data/net.nzbget.nzbget').\n\nTo work around this, you may choose any path on external storage using the above buttons.\n\nDownloads will be moved to these paths after they are completed.\n\n"
+        android:text="On the external storage, apps are only allowed to write into the app specific folder (e. g. '/storage/XXXX-XXXX/Android/data/net.nzbget.nzbget').\n\nTo work around this, you may choose any path on external storage using the above buttons.\n\nDownloads will be moved to these paths after they are completed.\n\n"
         android:layout_gravity="center_horizontal"
         android:textAlignment="gravity"
         android:gravity="center_horizontal"

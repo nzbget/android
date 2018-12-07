@@ -9,12 +9,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.FileObserver;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.File;
+
 public class DaemonService extends Service {
+
+    private String mLogTag = "NZBGet Daemon Service";
+    private FileObserver mHistoryFileObserver;
 
     @Override
     public void onCreate() {
@@ -45,6 +56,7 @@ public class DaemonService extends Service {
         switch (command) {
             case "start":
                 startDaemon();
+                startWatchingHistory();
                 break;
             case "stop":
                 stopDaemon();
@@ -56,6 +68,46 @@ public class DaemonService extends Service {
 
         // If we get killed, restart and redeliver the intent
         return START_REDELIVER_INTENT;
+    }
+
+    private void startWatchingHistory() {
+        if (mHistoryFileObserver == null) {
+            // Get history path
+            // HTTP request must not be done on the main thread
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try  {
+                        JSONObject response = APIManager.getConfig();
+                        // Get queue path
+                        JSONArray resultArray = response.getJSONArray("result");
+                        String queueDir = null;
+                        for (int i = 0; i < resultArray.length(); i++) {
+                            JSONObject object = resultArray.getJSONObject(i);
+                            String name = object.getString("Name");
+                            if (name != null && name.equals("QueueDir")) {
+                                queueDir = object.getString("Value");
+                                break;
+                            }
+                        }
+                        if (queueDir != null) {
+                            mHistoryFileObserver = new FileObserver(new File(queueDir, "history").getPath()) {
+                                @Override
+                                public void onEvent(int event, String path) {
+                                    // Check history
+                                    Log.i(mLogTag, "GOT FILE EVENT!");
+                                    HistoryManager.getInstance(DaemonService.this).checkHistory();
+                                }
+                            };
+                            mHistoryFileObserver.startWatching();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            thread.start();
+        }
     }
 
     @Override
