@@ -165,13 +165,22 @@ public class HistoryManager {
     }
 
     private String getPathStringForDownload(String downloadName) {
-        String pathString = "";
+        String path = "";
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mCtx);
-        // TODO: Check downloadName if download is movie or tv
-        // For now we are always returning the default path
-        String pathDefault = sharedPreferences.getString("pathDefault", "");
-        pathString = pathDefault;
-        return pathString;
+        // Check if download is movie or tv
+        String type = Guessit.getInstance(mCtx).getType(downloadName);
+        switch (type) {
+            case "episode":
+                path = sharedPreferences.getString("tvPath", "");
+                break;
+            case "movie":
+                path = sharedPreferences.getString("moviePath", "");
+                break;
+        }
+        if (path.isEmpty()) {
+            path = sharedPreferences.getString("defaultPath", "");
+        }
+        return path;
     }
 
     private void deleteRecursive(File fileOrDirectory) {

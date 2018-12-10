@@ -20,9 +20,9 @@ public class StorageActivity extends AppCompatActivity implements ActivityCompat
         setContentView(R.layout.activity_storage);
         // Set text field values
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String pathDefault = sharedPreferences.getString("pathDefault", "");
-        if (pathDefault != "") {
-            ((TextView)findViewById(R.id.textDefaultPath)).setText(FileUtil.getFullPathFromTreeUri(Uri.parse(pathDefault), this));
+        String defaultPath = sharedPreferences.getString("defaultPath", "");
+        if (defaultPath != "") {
+            ((TextView)findViewById(R.id.textDefaultPath)).setText(FileUtil.getFullPathFromTreeUri(Uri.parse(defaultPath), this));
         }
         String moviePath = sharedPreferences.getString("moviePath", "");
         if (moviePath != "") {
@@ -48,7 +48,7 @@ public class StorageActivity extends AppCompatActivity implements ActivityCompat
                 case 10:
                     // Default path
                     ((TextView)findViewById(R.id.textDefaultPath)).setText(FileUtil.getFullPathFromTreeUri(pickedDir.getUri(), this));
-                    sharedPreferences.edit().putString("pathDefault", pickedDir.getUri().toString()).commit();
+                    sharedPreferences.edit().putString("defaultPath", pickedDir.getUri().toString()).commit();
                     break;
                 case 20:
                     // Movie path
