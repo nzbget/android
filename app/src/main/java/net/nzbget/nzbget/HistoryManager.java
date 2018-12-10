@@ -168,7 +168,7 @@ public class HistoryManager {
         String path = "";
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mCtx);
         // Check if download is movie or tv
-        String type = Guessit.getInstance(mCtx).getType(downloadName);
+        String type = GuessitManager.getInstance(mCtx).getType(downloadName);
         switch (type) {
             case "episode":
                 path = sharedPreferences.getString("tvPath", "");

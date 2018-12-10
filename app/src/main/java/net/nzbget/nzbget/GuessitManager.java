@@ -2,21 +2,23 @@ package net.nzbget.nzbget;
 
 import android.content.Context;
 
+import com.kabukky.guessit.Guessit;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Guessit {
+public class GuessitManager {
 
-    private static Guessit mInstance;
+    private static GuessitManager mInstance;
     private static  Context mContext;
 
-    private Guessit(Context context) {
+    private GuessitManager(Context context) {
         mContext = context;
     }
 
-    public static synchronized Guessit getInstance(Context context) {
+    public static synchronized GuessitManager getInstance(Context context) {
         if (mInstance == null) {
-            mInstance = new Guessit(context);
+            mInstance = new GuessitManager(context);
         }
         return mInstance;
     }
@@ -24,7 +26,7 @@ public class Guessit {
     public String getType(String downloadname) {
         String type = "";
         try {
-            JSONObject guess = com.kabukky.guessit.Guessit.getInstance(mContext).guessit(downloadname);
+            JSONObject guess = Guessit.getInstance(mContext).guessit(downloadname);
             type = guess.getString("type");
         } catch (JSONException e) {
             e.printStackTrace();
