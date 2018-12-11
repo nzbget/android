@@ -18,8 +18,6 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
-
 public class DaemonService extends Service {
 
     private FileObserver mHistoryFileObserver;
@@ -88,11 +86,14 @@ public class DaemonService extends Service {
                             }
                         }
                         if (queueDir != null) {
-                            mHistoryFileObserver = new FileObserver(new File(queueDir, "history").getPath()) {
+                            // We trust that queueDir exists at this point (created by starting the daemon above)
+                            mHistoryFileObserver = new FileObserver(queueDir) {
                                 @Override
                                 public void onEvent(int event, String path) {
-                                    // Check history
-                                    HistoryManager.getInstance(DaemonService.this).checkHistory();
+                                    if (path != null && path.equals("history")) {
+                                        // Check history
+                                        HistoryManager.getInstance(DaemonService.this).checkHistory();
+                                    }
                                 }
                             };
                             mHistoryFileObserver.startWatching();

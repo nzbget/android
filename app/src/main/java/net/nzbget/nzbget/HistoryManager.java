@@ -143,10 +143,11 @@ public class HistoryManager {
         if (!moveUriString.isEmpty()) {
             try {
                 File srcDir = new File(downloadDir);
-                Uri movetUri = Uri.parse(moveUriString);
-                DocumentFile targetDir = DocumentFile.fromTreeUri(mCtx, movetUri);
+                Uri moveUri = Uri.parse(moveUriString);
+                DocumentFile targetDir = DocumentFile.fromTreeUri(mCtx, moveUri);
                 moveFile(srcDir, targetDir);
                 deleteRecursive(srcDir);
+                Log.i(mLogTag, "Moved "+downloadDir+" to "+FileUtil.getFullPathFromTreeUri(targetDir.getUri(), mCtx));
             } catch (Exception e) {
                 e.printStackTrace();
             }
