@@ -7,9 +7,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class StorageActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -23,14 +25,17 @@ public class StorageActivity extends AppCompatActivity implements ActivityCompat
         String defaultPath = sharedPreferences.getString("defaultPath", "");
         if (defaultPath != "") {
             ((TextView)findViewById(R.id.textDefaultPath)).setText(FileUtil.getFullPathFromTreeUri(Uri.parse(defaultPath), this));
+            ((Button)findViewById(R.id.removeDefaultPath)).setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.path_remove_botton_enabled));
         }
         String moviePath = sharedPreferences.getString("moviePath", "");
         if (moviePath != "") {
             ((TextView)findViewById(R.id.textMoviePath)).setText(FileUtil.getFullPathFromTreeUri(Uri.parse(moviePath), this));
+            ((Button)findViewById(R.id.removeMoviePath)).setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.path_remove_botton_enabled));
         }
         String tvPath = sharedPreferences.getString("tvPath", "");
         if (tvPath != "") {
             ((TextView)findViewById(R.id.textTVPath)).setText(FileUtil.getFullPathFromTreeUri(Uri.parse(tvPath), this));
+            ((Button)findViewById(R.id.removeTVPath)).setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.path_remove_botton_enabled));
         }
     }
 
@@ -43,22 +48,18 @@ public class StorageActivity extends AppCompatActivity implements ActivityCompat
             DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
             grantUriPermission(getPackageName(), treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             switch (requestCode) {
                 case 10:
                     // Default path
-                    ((TextView)findViewById(R.id.textDefaultPath)).setText(FileUtil.getFullPathFromTreeUri(pickedDir.getUri(), this));
-                    sharedPreferences.edit().putString("defaultPath", pickedDir.getUri().toString()).commit();
+                    setChosenPath("defaultPath", pickedDir.getUri(), (TextView)findViewById(R.id.textDefaultPath), (Button)findViewById(R.id.removeDefaultPath));
                     break;
                 case 20:
                     // Movie path
-                    ((TextView)findViewById(R.id.textMoviePath)).setText(FileUtil.getFullPathFromTreeUri(pickedDir.getUri(), this));
-                    sharedPreferences.edit().putString("moviePath", pickedDir.getUri().toString()).commit();
+                    setChosenPath("moviePath", pickedDir.getUri(), (TextView)findViewById(R.id.textMoviePath), (Button)findViewById(R.id.removeMoviePath));
                     break;
                 case 30:
                     // TV path
-                    ((TextView)findViewById(R.id.textTVPath)).setText(FileUtil.getFullPathFromTreeUri(pickedDir.getUri(), this));
-                    sharedPreferences.edit().putString("tvPath", pickedDir.getUri().toString()).commit();
+                    setChosenPath("tvPath", pickedDir.getUri(), (TextView)findViewById(R.id.textTVPath), (Button)findViewById(R.id.removeTVPath));
                     break;
             }
         }
@@ -125,6 +126,32 @@ public class StorageActivity extends AppCompatActivity implements ActivityCompat
             return;
         }
         showFolderPicker(30);
+    }
+
+    public void removeDefaultPath(View view) {
+        removeChosenPath("defaultPath", (TextView)findViewById(R.id.textDefaultPath), (Button)findViewById(R.id.removeDefaultPath));
+    }
+
+    public void removeMoviePath(View view) {
+        removeChosenPath("moviePath", (TextView)findViewById(R.id.textMoviePath), (Button)findViewById(R.id.removeMoviePath));
+    }
+
+    public void removeTVPath(View view) {
+        removeChosenPath("tvPath", (TextView)findViewById(R.id.textTVPath), (Button)findViewById(R.id.removeTVPath));
+    }
+
+    private void setChosenPath(String sharedPrefsKey, Uri path, TextView pathTextView, Button removePathButton) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.edit().putString(sharedPrefsKey, path.toString()).commit();
+        pathTextView.setText(FileUtil.getFullPathFromTreeUri(path, this));
+        removePathButton.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.path_remove_botton_enabled));
+    }
+
+    private void removeChosenPath(String sharedPrefsKey, TextView pathTextView, Button removePathButton) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.edit().remove(sharedPrefsKey).commit();
+        pathTextView.setText("Not chosen");
+        removePathButton.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.path_remove_botton_disabled));
     }
 
 }

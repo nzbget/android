@@ -139,11 +139,11 @@ public class HistoryManager {
 
     private void moveFinishedDownload(String downloadDir) {
         // Check if we need to move the download
-        String movePath = getPathStringForDownload(downloadDir);
-        if (!movePath.isEmpty()) {
+        String moveUriString = getUriStringForDownload(downloadDir);
+        if (!moveUriString.isEmpty()) {
             try {
                 File srcDir = new File(downloadDir);
-                Uri movetUri = Uri.parse(movePath);
+                Uri movetUri = Uri.parse(moveUriString);
                 DocumentFile targetDir = DocumentFile.fromTreeUri(mCtx, movetUri);
                 moveFile(srcDir, targetDir);
                 deleteRecursive(srcDir);
@@ -153,23 +153,24 @@ public class HistoryManager {
         }
     }
 
-    private String getPathStringForDownload(String downloadName) {
-        String path = "";
+    // getUriStringForDownload will get the string that represents the uri of the directory that the download should be moved to
+    private String getUriStringForDownload(String downloadName) {
+        String uriString = "";
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mCtx);
-        // Check if download is movie or tv
+        // Check if download is movie or tv using guessit
         String type = GuessitManager.getInstance(mCtx).getType(downloadName);
         switch (type) {
             case "episode":
-                path = sharedPreferences.getString("tvPath", "");
+                uriString = sharedPreferences.getString("tvPath", "");
                 break;
             case "movie":
-                path = sharedPreferences.getString("moviePath", "");
+                uriString = sharedPreferences.getString("moviePath", "");
                 break;
         }
-        if (path.isEmpty()) {
-            path = sharedPreferences.getString("defaultPath", "");
+        if (uriString.isEmpty()) {
+            uriString = sharedPreferences.getString("defaultPath", "");
         }
-        return path;
+        return uriString;
     }
 
     private void deleteRecursive(File fileOrDirectory) {

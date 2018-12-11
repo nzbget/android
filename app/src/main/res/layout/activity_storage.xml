@@ -1,119 +1,222 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:layout_margin="20dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Choose where finished downloads should be moved to:"
-        android:layout_gravity="center_horizontal"
-        android:textAlignment="gravity"
-        android:gravity="center_horizontal"
-        android:layout_marginBottom="20dp" />
+    android:gravity="center_horizontal">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:gravity="center_horizontal"
+            android:text="Where do you want to move finished downloads?"
+            android:textAlignment="gravity"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="5">
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#ccc"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"/>
 
             <TextView
-                android:id="@+id/textDefaultPath"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="3"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="Not chosen"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:text="Default Path"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-            <Button
-                android:id="@+id/chooseDefaultPath"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="2"
-                android:onClick="chooseDefaultPath"
-                android:text="Choose Default Path" />
+                android:orientation="horizontal"
+                android:weightSum="8">
+
+                <TextView
+                    android:id="@+id/textDefaultPath"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="5"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="Not chosen"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                <Button
+                    android:id="@+id/chooseDefaultPath"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="2"
+                    android:onClick="chooseDefaultPath"
+                    android:text="Choose" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+                    <Button
+                        android:id="@+id/removeDefaultPath"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:onClick="removeDefaultPath"
+                        android:backgroundTint="#ccc"
+                        android:background="@drawable/baseline_clear_white_24" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#ccc"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Movie Path"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="8">
+
+                <TextView
+                    android:id="@+id/textMoviePath"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="5"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="Not chosen"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                <Button
+                    android:id="@+id/chooseMoviePath"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="2"
+                    android:onClick="chooseMoviePath"
+                    android:text="Choose" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+                    <Button
+                        android:id="@+id/removeMoviePath"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:onClick="removeMoviePath"
+                        android:backgroundTint="#ccc"
+                        android:background="@drawable/baseline_clear_white_24" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#ccc"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TV Path"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="8">
+
+                <TextView
+                    android:id="@+id/textTVPath"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="5"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="Not chosen"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+
+                <Button
+                    android:id="@+id/chooseTVPath"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="2"
+                    android:onClick="chooseTVPath"
+                    android:text="Choose" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+                    <Button
+                        android:id="@+id/removeTVPath"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:onClick="removeTVPath"
+                        android:backgroundTint="#ccc"
+                        android:background="@drawable/baseline_clear_white_24" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#ccc"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"/>
+
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="5">
-
-            <TextView
-                android:id="@+id/textMoviePath"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="3"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="Not chosen"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <Button
-                android:id="@+id/chooseMoviePath"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="2"
-                android:onClick="chooseMoviePath"
-                android:text="Choose Movie Path" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="5">
-
-            <TextView
-                android:id="@+id/textTVPath"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="3"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="Not chosen"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-
-            <Button
-                android:id="@+id/chooseTVPath"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="2"
-                android:onClick="chooseTVPath"
-                android:text="Choose TV Path" />
-        </LinearLayout>
-
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:gravity="center_horizontal"
+            android:text="On the external storage, apps are only allowed to write into the app specific folder (e. g. '/storage/XXXX-XXXX/Android/data/net.nzbget.nzbget').\n\nTo work around this, you may choose any path on the external storage using the above buttons.\n\nDownloads will be moved to these paths after they have finished successfully.\n\nAll downloads will be moved to the default path unless a movie or TV path is chosen, in which case movies or TV shows will be moved there instead.\n\nDetection of movie and TV downloads is done via analysis of the download name (e. g. name of the NZB file), not via the categories attached to the download.\n\nNOTE: This feature will only move finished downloads from the DestDir you chose in the NZBGet Settings, so don't remove your DestDir in the web interface."
+            android:textAlignment="gravity"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="On the external storage, apps are only allowed to write into the app specific folder (e. g. '/storage/XXXX-XXXX/Android/data/net.nzbget.nzbget').\n\nTo work around this, you may choose any path on external storage using the above buttons.\n\nDownloads will be moved to these paths after they are completed.\n\n"
-        android:layout_gravity="center_horizontal"
-        android:textAlignment="gravity"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="20dp" />
-
-</LinearLayout>
+</ScrollView>
