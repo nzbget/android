@@ -13,7 +13,6 @@ import android.os.FileObserver;
 import android.os.IBinder;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -23,7 +22,6 @@ import java.io.File;
 
 public class DaemonService extends Service {
 
-    private String mLogTag = "NZBGet Daemon Service";
     private FileObserver mHistoryFileObserver;
 
     @Override
@@ -94,7 +92,6 @@ public class DaemonService extends Service {
                                 @Override
                                 public void onEvent(int event, String path) {
                                     // Check history
-                                    Log.i(mLogTag, "GOT FILE EVENT!");
                                     HistoryManager.getInstance(DaemonService.this).checkHistory();
                                 }
                             };

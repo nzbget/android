@@ -56,11 +56,9 @@ public class HistoryManager {
     }
 
     private void getHistory() {
-        Log.i(mLogTag, "GETTING HISTORY");
         // Get history fom API
         try {
             JSONObject response = APIManager.getHistory();
-            Log.i(mLogTag, "GOT HISTORY: "+response.toString());
             JSONArray resultArray = response.getJSONArray("result");
             for (int i = 0; i < resultArray.length(); i++) {
                 JSONObject object = resultArray.getJSONObject(i);
@@ -77,27 +75,26 @@ public class HistoryManager {
                     }
                     if (shouldMoveFile) {
                         processUnhandledHistoryEntry(object);
-                    } else {
-                        Log.i(mLogTag, "FILE WAS ALREADY MOVED!");
                     }
-                } else {
-                    Log.i(mLogTag, "PARAMETERS IS NULL!");
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             // Clean up recently handled files
+            // Everything older than 1 hour will be deleted
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.HOUR_OF_DAY, -1);
             Date now = calendar.getTime();
             Iterator<Map.Entry<Integer,Date>> iter = mRecentlyHandledEntriesMap.entrySet().iterator();
+            Log.i(mLogTag, " Recently Handled Entries Map size before cleanup: "+mRecentlyHandledEntriesMap.size());
             while (iter.hasNext()) {
                 Map.Entry<Integer,Date> entry = iter.next();
                 if (entry.getValue().before(now)) {
                     iter.remove();
                 }
             }
+            Log.i(mLogTag, " Recently Handled Entries Map size after cleanup: "+mRecentlyHandledEntriesMap.size());
         }
     }
 
@@ -105,15 +102,14 @@ public class HistoryManager {
         try {
             int nzbId = jsonObject.getInt("NZBID");
             if (mRecentlyHandledEntriesMap.containsKey(nzbId)) {
-                Log.i(mLogTag, "WE JUST TRIED TO HANDLE A DUPLICATE ENTRY!!!!!!!");
                 // we already handled this entry
                 return;
             }
+            // Put ID in recently handled entries since moving the files my take a long time and we don't want duplicates
             mRecentlyHandledEntriesMap.put(nzbId, new Date());
             // Get Status
             String status = jsonObject.getString("Status");
-            if (status.startsWith("SUCCESS/")) { // TODO: Also handle warning (see issue)
-                Log.i(mLogTag, "HANDLING FILE!");
+            if (status.startsWith("SUCCESS/")) { // TODO: Also handle warning (see https://github.com/nzbget/android/issues/11)
                 // Download is done
                 // Get dir
                 String destDir = jsonObject.getString("DestDir");
@@ -131,11 +127,10 @@ public class HistoryManager {
         // Get ID
         try {
             int nzbId = jsonObject.getInt("NZBID");
-            Log.i(mLogTag, "ID: " + Integer.toString(nzbId));
             // Set entry as handled in NZBGet
             boolean success = APIManager.postEditQueue("HistorySetParameter", "HandledByAndroidDaemon=true", new int[]{nzbId});
             if (!success) {
-                Log.e(mLogTag, "Could not set history parameter");
+                Log.e(mLogTag, "Could not set history parameter using edit queue");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -149,7 +144,6 @@ public class HistoryManager {
             try {
                 File srcDir = new File(downloadDir);
                 Uri movetUri = Uri.parse(movePath);
-                Log.i(mLogTag, "srcDir.getName(): "+srcDir.getName());
                 DocumentFile targetDir = DocumentFile.fromTreeUri(mCtx, movetUri);
                 moveFile(srcDir, targetDir);
                 deleteRecursive(srcDir);
