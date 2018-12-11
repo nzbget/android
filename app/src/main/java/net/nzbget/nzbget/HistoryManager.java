@@ -12,9 +12,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,6 +19,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import okio.BufferedSink;
+import okio.Okio;
+import okio.Source;
 
 public class HistoryManager {
 
@@ -194,15 +195,8 @@ public class HistoryManager {
         else {
             // Create destination file
             DocumentFile file = destFile.createFile("", sourceFile.getName());
-            try (InputStream in = new FileInputStream(sourceFile)) {
-                try (OutputStream out = mCtx.getContentResolver().openOutputStream(file.getUri())) {
-                    // Transfer bytes from in to out
-                    byte[] buf = new byte[1024];
-                    int len;
-                    while ((len = in.read(buf)) > 0) {
-                        out.write(buf, 0, len);
-                    }
-                }
+            try (Source a = Okio.source(sourceFile); BufferedSink b = Okio.buffer(Okio.sink(mCtx.getContentResolver().openOutputStream(file.getUri())))) {
+                b.writeAll(a);
             } catch (Exception e) {
                 e.printStackTrace();
             }
