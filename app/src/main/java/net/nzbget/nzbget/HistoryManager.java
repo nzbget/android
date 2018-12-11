@@ -57,11 +57,6 @@ public class HistoryManager {
 
     private void getHistory() {
         Log.i(mLogTag, "GETTING HISTORY");
-        try {
-            Thread.sleep(10000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         // Get history fom API
         try {
             JSONObject response = APIManager.getHistory();
