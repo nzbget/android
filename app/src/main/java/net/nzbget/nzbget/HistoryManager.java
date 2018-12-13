@@ -108,6 +108,13 @@ public class HistoryManager {
             }
             // Put ID in recently handled entries since moving the files my take a long time and we don't want duplicates
             mRecentlyHandledEntriesMap.put(nzbId, new Date());
+            // Get category
+            String category = "";
+            try {
+                category = jsonObject.getString("Category");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             // Get Status
             String status = jsonObject.getString("Status");
             if (status.startsWith("SUCCESS/")) { // TODO: Also handle warning (see https://github.com/nzbget/android/issues/11)
@@ -115,7 +122,7 @@ public class HistoryManager {
                 // Get dir
                 String destDir = jsonObject.getString("DestDir");
                 // Move files
-                moveFinishedDownload(destDir);
+                moveFinishedDownload(destDir, category);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -138,9 +145,9 @@ public class HistoryManager {
         }
     }
 
-    private void moveFinishedDownload(String downloadDir) {
+    private void moveFinishedDownload(String downloadDir, String categoryName) {
         // Check if we need to move the download
-        String moveUriString = getUriStringForDownload(downloadDir);
+        String moveUriString = getUriStringForCategory(categoryName);
         if (!moveUriString.isEmpty()) {
             try {
                 File srcDir = new File(downloadDir);
@@ -155,22 +162,16 @@ public class HistoryManager {
         }
     }
 
-    // getUriStringForDownload will get the string that represents the uri of the directory that the download should be moved to
-    private String getUriStringForDownload(String downloadName) {
+    // getUriStringForCategory will get the string that represents the uri of the directory that the download should be moved to
+    private String getUriStringForCategory(String categoryName) {
         String uriString = "";
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mCtx);
-        // Check if download is movie or tv using guessit
-        String type = GuessitManager.getInstance(mCtx).getType(downloadName);
-        switch (type) {
-            case "episode":
-                uriString = sharedPreferences.getString("tvPath", "");
-                break;
-            case "movie":
-                uriString = sharedPreferences.getString("moviePath", "");
-                break;
+        if (!categoryName.isEmpty()) {
+            uriString = sharedPreferences.getString(categoryName, "");
         }
         if (uriString.isEmpty()) {
-            uriString = sharedPreferences.getString("defaultPath", "");
+            // No path is chosen for this category get default path
+            uriString = sharedPreferences.getString(StorageActivity.DEFAULT_PATH_NAME, "");
         }
         return uriString;
     }

@@ -10,33 +10,27 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public class StorageActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+
+    private String mLogTag = "StorageActivity";
+
+    public static String DEFAULT_PATH_NAME = "Default (no category)";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_storage);
-        // Set text field values
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String defaultPath = sharedPreferences.getString("defaultPath", "");
-        if (defaultPath != "") {
-            ((TextView)findViewById(R.id.textDefaultPath)).setText(FileUtil.getFullPathFromTreeUri(Uri.parse(defaultPath), this));
-            ((Button)findViewById(R.id.removeDefaultPath)).setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.path_remove_botton_enabled));
-        }
-        String moviePath = sharedPreferences.getString("moviePath", "");
-        if (moviePath != "") {
-            ((TextView)findViewById(R.id.textMoviePath)).setText(FileUtil.getFullPathFromTreeUri(Uri.parse(moviePath), this));
-            ((Button)findViewById(R.id.removeMoviePath)).setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.path_remove_botton_enabled));
-        }
-        String tvPath = sharedPreferences.getString("tvPath", "");
-        if (tvPath != "") {
-            ((TextView)findViewById(R.id.textTVPath)).setText(FileUtil.getFullPathFromTreeUri(Uri.parse(tvPath), this));
-            ((Button)findViewById(R.id.removeTVPath)).setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.path_remove_botton_enabled));
-        }
+        setUpActivity();
     }
 
     @Override
@@ -48,19 +42,13 @@ public class StorageActivity extends AppCompatActivity implements ActivityCompat
             DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
             grantUriPermission(getPackageName(), treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            switch (requestCode) {
-                case 10:
-                    // Default path
-                    setChosenPath("defaultPath", pickedDir.getUri(), (TextView)findViewById(R.id.textDefaultPath), (Button)findViewById(R.id.removeDefaultPath));
-                    break;
-                case 20:
-                    // Movie path
-                    setChosenPath("moviePath", pickedDir.getUri(), (TextView)findViewById(R.id.textMoviePath), (Button)findViewById(R.id.removeMoviePath));
-                    break;
-                case 30:
-                    // TV path
-                    setChosenPath("tvPath", pickedDir.getUri(), (TextView)findViewById(R.id.textTVPath), (Button)findViewById(R.id.removeTVPath));
-                    break;
+            // Get path view
+            LinearLayout containerLinearLayout = (LinearLayout)findViewById(R.id.pathContainer);
+            if (requestCode < containerLinearLayout.getChildCount()) {
+                LinearLayout pathLinearLayout = (LinearLayout)containerLinearLayout.getChildAt(requestCode);
+                setChosenPath(((TextView) pathLinearLayout.findViewById(R.id.textTitlePath)).getText().toString(), pickedDir.getUri(), (TextView) pathLinearLayout.findViewById(R.id.textDisplayPath), (Button) pathLinearLayout.findViewById(R.id.buttonRemovePath));
+            } else {
+                Log.i(mLogTag, "Received invalid resultCode in onActivityResult.");
             }
         }
     }
@@ -80,18 +68,87 @@ public class StorageActivity extends AppCompatActivity implements ActivityCompat
                 return;
             }
         }
-        // Check request code
-        switch (requestCode) {
-            case 1:
-                showFolderPicker(10);
-                break;
-            case 2:
-                showFolderPicker(20);
-                break;
-            case 3:
-                showFolderPicker(30);
-                break;
-        }
+        // Show folder picker
+        showFolderPicker(requestCode);
+    }
+
+    private void setUpActivity() {
+        // Add a view to set the default path
+        addCategoryLayout(DEFAULT_PATH_NAME);
+        // Get categories from API
+        // HTTP request must not be done on the main thread
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try  {
+                    JSONObject response = APIManager.getConfig();
+                    // Get queue path
+                    JSONArray resultArray = response.getJSONArray("result");
+                    for (int i = 0; i < resultArray.length(); i++) {
+                        JSONObject object = resultArray.getJSONObject(i);
+                        String name = object.getString("Name");
+                        if (name != null && name.matches("^Category\\d\\.Name$")) {
+                            String categoryName = object.getString("Value");
+                            addCategoryLayout(categoryName);
+                        }
+                    }
+                } catch (Exception e) {
+                    StorageActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            MessageActivity.showErrorMessage(StorageActivity.this, "Warning", "Could not get NZBGet categories. Make sure the NZBGet daemon is running.", new MessageActivity.OnClickListener() {
+                                @Override
+                                public void onClick() {
+                                    StorageActivity.this.finish();
+                                }
+                            });
+                        }
+                    });
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+    }
+
+    private void addCategoryLayout(final String categoryName) {
+        // We can only add to view on UI thread
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(StorageActivity.this);
+                final LinearLayout containerLinearLayout = (LinearLayout) findViewById(R.id.pathContainer);
+                final int layoutIndex = containerLinearLayout.getChildCount();
+
+                final LinearLayout pathLinearLayout = (LinearLayout) LayoutInflater.from(StorageActivity.this).inflate(R.layout.linearlayout_path_entry, null);
+                ((TextView)pathLinearLayout.findViewById(R.id.textTitlePath)).setText(categoryName);
+                ((Button)pathLinearLayout.findViewById(R.id.buttonChoosePath)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Check storage permission first
+                        if (!PermissionManager.isStoragePermissionGranted(StorageActivity.this, layoutIndex)) {
+                            return;
+                        }
+                        showFolderPicker(layoutIndex);
+                    }
+                });
+                final TextView textDisplayPath = (TextView)pathLinearLayout.findViewById(R.id.textDisplayPath);
+                final Button buttonRemovePath = (Button)pathLinearLayout.findViewById(R.id.buttonRemovePath);
+                buttonRemovePath.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        removeChosenPath(categoryName, textDisplayPath, buttonRemovePath);
+                    }
+                });
+
+                String pathFromSharedPreferences = sharedPreferences.getString(categoryName, "");
+                if (pathFromSharedPreferences != "") {
+                    textDisplayPath.setText(FileUtil.getFullPathFromTreeUri(Uri.parse(pathFromSharedPreferences), StorageActivity.this));
+                    buttonRemovePath.setBackgroundTintList(ContextCompat.getColorStateList(StorageActivity.this, R.color.path_remove_botton_enabled));
+                }
+
+                containerLinearLayout.addView(pathLinearLayout);
+            }
+        });
     }
 
     public void showFolderPicker(int requestCode) {
@@ -102,42 +159,6 @@ public class StorageActivity extends AppCompatActivity implements ActivityCompat
                         | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
                         | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
         startActivityForResult(intent, requestCode);
-    }
-
-    public void chooseDefaultPath(View view) {
-        // Check storage permission first
-        if (!PermissionManager.isStoragePermissionGranted(this, 1)) {
-            return;
-        }
-        showFolderPicker(10);
-    }
-
-    public void chooseMoviePath(View view) {
-        // Check storage permission first
-        if (!PermissionManager.isStoragePermissionGranted(this, 2)) {
-            return;
-        }
-        showFolderPicker(20);
-    }
-
-    public void chooseTVPath(View view) {
-        // Check storage permission first
-        if (!PermissionManager.isStoragePermissionGranted(this, 3)) {
-            return;
-        }
-        showFolderPicker(30);
-    }
-
-    public void removeDefaultPath(View view) {
-        removeChosenPath("defaultPath", (TextView)findViewById(R.id.textDefaultPath), (Button)findViewById(R.id.removeDefaultPath));
-    }
-
-    public void removeMoviePath(View view) {
-        removeChosenPath("moviePath", (TextView)findViewById(R.id.textMoviePath), (Button)findViewById(R.id.removeMoviePath));
-    }
-
-    public void removeTVPath(View view) {
-        removeChosenPath("tvPath", (TextView)findViewById(R.id.textTVPath), (Button)findViewById(R.id.removeTVPath));
     }
 
     private void setChosenPath(String sharedPrefsKey, Uri path, TextView pathTextView, Button removePathButton) {
