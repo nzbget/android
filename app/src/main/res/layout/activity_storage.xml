@@ -1,0 +1,47 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:gravity="center_horizontal"
+            android:text="Where do you want to move finished downloads?"
+            android:textAlignment="gravity"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/pathContainer">
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#ccc"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:gravity="center_horizontal"
+            android:text="On the external storage, apps are only allowed to write into the app specific folder (e. g. '/storage/XXXX-XXXX/Android/data/net.nzbget.nzbget').\n\nTo work around this, you may choose any path on the external storage using the above buttons.\n\nDownloads will be moved to these paths after they have finished successfully.\n\nAll downloads will be moved to the default path unless a path for the category of a specific download is chosen, in which case it will be moved there instead.\n\nNOTE: This feature will only move finished downloads from the DestDir you chose in the NZBGet Settings, so don't remove your DestDir in the web interface."
+            android:textAlignment="gravity"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
+
+</ScrollView>
