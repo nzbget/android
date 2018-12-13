@@ -167,11 +167,11 @@ public class HistoryManager {
         String uriString = "";
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mCtx);
         if (!categoryName.isEmpty()) {
-            uriString = sharedPreferences.getString(categoryName, "");
+            uriString = sharedPreferences.getString(StorageActivity.PATH_NAME_PREF_PREFIX+categoryName, "");
         }
         if (uriString.isEmpty()) {
             // No path is chosen for this category get default path
-            uriString = sharedPreferences.getString(StorageActivity.DEFAULT_PATH_NAME, "");
+            uriString = sharedPreferences.getString(StorageActivity.PATH_NAME_PREF_PREFIX+StorageActivity.DEFAULT_PATH_NAME, "");
         }
         return uriString;
     }

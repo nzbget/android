@@ -25,6 +25,7 @@ public class StorageActivity extends AppCompatActivity implements ActivityCompat
     private String mLogTag = "StorageActivity";
 
     public static String DEFAULT_PATH_NAME = "Default (no category)";
+    public static String PATH_NAME_PREF_PREFIX = "PATH_";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,7 @@ public class StorageActivity extends AppCompatActivity implements ActivityCompat
             LinearLayout containerLinearLayout = (LinearLayout)findViewById(R.id.pathContainer);
             if (requestCode < containerLinearLayout.getChildCount()) {
                 LinearLayout pathLinearLayout = (LinearLayout)containerLinearLayout.getChildAt(requestCode);
-                setChosenPath(((TextView) pathLinearLayout.findViewById(R.id.textTitlePath)).getText().toString(), pickedDir.getUri(), (TextView) pathLinearLayout.findViewById(R.id.textDisplayPath), (Button) pathLinearLayout.findViewById(R.id.buttonRemovePath));
+                setChosenPath(PATH_NAME_PREF_PREFIX+((TextView) pathLinearLayout.findViewById(R.id.textTitlePath)).getText().toString(), pickedDir.getUri(), (TextView) pathLinearLayout.findViewById(R.id.textDisplayPath), (Button) pathLinearLayout.findViewById(R.id.buttonRemovePath));
             } else {
                 Log.i(mLogTag, "Received invalid resultCode in onActivityResult.");
             }
@@ -136,11 +137,11 @@ public class StorageActivity extends AppCompatActivity implements ActivityCompat
                 buttonRemovePath.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        removeChosenPath(categoryName, textDisplayPath, buttonRemovePath);
+                        removeChosenPath(PATH_NAME_PREF_PREFIX+categoryName, textDisplayPath, buttonRemovePath);
                     }
                 });
 
-                String pathFromSharedPreferences = sharedPreferences.getString(categoryName, "");
+                String pathFromSharedPreferences = sharedPreferences.getString(PATH_NAME_PREF_PREFIX+categoryName, "");
                 if (pathFromSharedPreferences != "") {
                     textDisplayPath.setText(FileUtil.getFullPathFromTreeUri(Uri.parse(pathFromSharedPreferences), StorageActivity.this));
                     buttonRemovePath.setBackgroundTintList(ContextCompat.getColorStateList(StorageActivity.this, R.color.path_remove_botton_enabled));
