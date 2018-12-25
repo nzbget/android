@@ -481,7 +481,7 @@ public class InstallActivity extends AppCompatActivity implements ActivityCompat
                 return;
             }
 
-            boolean ok = Daemon.getInstance().install();
+            boolean ok = Daemon.getInstance(InstallActivity.this).install();
             activity.installCompleted(ok, null);
         }
     }

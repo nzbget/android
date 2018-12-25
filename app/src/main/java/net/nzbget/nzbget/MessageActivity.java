@@ -30,7 +30,7 @@ public class MessageActivity extends AppCompatActivity
         setContentView(R.layout.activity_message);
         String title = getIntent().getStringExtra("title");
         ((TextView)findViewById(R.id.titleLabel)).setText(title);
-        String text = Daemon.getInstance().lastLog;
+        String text = Daemon.getInstance(this).lastLog;
         ((TextView)findViewById(R.id.messageText)).setText(text);
     }
 
