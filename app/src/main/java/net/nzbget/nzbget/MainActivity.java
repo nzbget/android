@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
 
     public void updateStatus()
     {
-        Daemon.Status curStatus = Daemon.getInstance().status();
+        Daemon.Status curStatus = Daemon.getInstance(this).status();
         if (curStatus != lastStatus)
         {
             switch (curStatus)
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity
         {
             public void onClick(DialogInterface dialog, int id)
             {
-                boolean ok = Daemon.getInstance().remove();
+                boolean ok = Daemon.getInstance(MainActivity.this).remove();
                 if (ok)
                 {
                     MessageActivity.showOkMessage(me, "Daemon Removal", "NZBGet daemon has been successfully removed.", null);

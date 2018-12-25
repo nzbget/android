@@ -2,7 +2,7 @@
 
 set -o errexit
 
-HOME=/data/data/net.nzbget.nzbget
+HOME=$2
 PATH=$HOME/xbin:$PATH
 INSTALLER=/sdcard/data/nzbget/installer/nzbget-bin-android.run
 CONFIGFILE=$HOME/nzbget/nzbget.conf

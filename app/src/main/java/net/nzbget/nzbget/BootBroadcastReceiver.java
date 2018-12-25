@@ -12,7 +12,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         // System just booted up
-        if (Daemon.getInstance().status() == Daemon.Status.STATUS_STOPPED) {
+        if (Daemon.getInstance(context).status() == Daemon.Status.STATUS_STOPPED) {
             // Daemon is installed and stopped
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
             if (sharedPreferences.getBoolean("autostart", true)) { // Default autostart value is true

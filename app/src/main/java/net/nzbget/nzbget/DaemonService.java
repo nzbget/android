@@ -116,7 +116,7 @@ public class DaemonService extends Service {
 
     private void startDaemon()
     {
-        boolean ok = Daemon.getInstance().start();
+        boolean ok = Daemon.getInstance(this).start();
         if (ok)
         {
             showMessage("NZBGet daemon has been successfully started and now is running in the background.");
@@ -129,7 +129,7 @@ public class DaemonService extends Service {
 
     private void stopDaemon()
     {
-        boolean ok = Daemon.getInstance().stop();
+        boolean ok = Daemon.getInstance(this).stop();
         if (ok)
         {
             showMessage("NZBGet daemon has been shut down.");
