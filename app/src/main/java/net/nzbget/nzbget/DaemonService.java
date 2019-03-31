@@ -73,7 +73,7 @@ public class DaemonService extends Service {
                 @Override
                 public void run() {
                     try  {
-                        JSONObject response = APIManager.getConfig();
+                        JSONObject response = APIManager.getConfig(DaemonService.this);
                         // Get queue path
                         JSONArray resultArray = response.getJSONArray("result");
                         String queueDir = null;

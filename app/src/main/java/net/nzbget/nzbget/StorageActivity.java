@@ -1,5 +1,6 @@
 package net.nzbget.nzbget;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -82,7 +83,7 @@ public class StorageActivity extends AppCompatActivity implements ActivityCompat
             @Override
             public void run() {
                 try  {
-                    JSONObject response = APIManager.getConfig();
+                    JSONObject response = APIManager.getConfig(StorageActivity.this);
                     // Get queue path
                     JSONArray resultArray = response.getJSONArray("result");
                     for (int i = 0; i < resultArray.length(); i++) {

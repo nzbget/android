@@ -59,7 +59,7 @@ public class HistoryManager {
     private void getHistory() {
         // Get history fom API
         try {
-            JSONObject response = APIManager.getHistory();
+            JSONObject response = APIManager.getHistory(mCtx);
             JSONArray resultArray = response.getJSONArray("result");
             for (int i = 0; i < resultArray.length(); i++) {
                 JSONObject object = resultArray.getJSONObject(i);
@@ -136,7 +136,7 @@ public class HistoryManager {
         try {
             int nzbId = jsonObject.getInt("NZBID");
             // Set entry as handled in NZBGet
-            boolean success = APIManager.postEditQueue("HistorySetParameter", "HandledByAndroidDaemon=true", new int[]{nzbId});
+            boolean success = APIManager.postEditQueue(mCtx, "HistorySetParameter", "HandledByAndroidDaemon=true", new int[]{nzbId});
             if (!success) {
                 Log.e(mLogTag, "Could not set history parameter using edit queue");
             }
