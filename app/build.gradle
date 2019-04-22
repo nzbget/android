@@ -23,6 +23,10 @@ task prepareJni {
     doLast {
         copy {
             from "src/main/jniLibs/armeabi/libdaemon.so"
+            into "src/main/jniLibs/arm64-v8a"
+        }
+        copy {
+            from "src/main/jniLibs/armeabi/libdaemon.so"
             into "src/main/jniLibs/x86"
         }
     }
@@ -32,6 +36,7 @@ task cleanupJni {
     doLast {
         println "**** cleanup, doesn't work :("
         delete "src/main/jniLibs/x86/libdaemon.so"
+        delete "src/main/jniLibs/arm64-v8a/libdaemon.so"
     }
 }
 

@@ -12,7 +12,8 @@ public class Daemon
 {
 
     private static Daemon instance = null;
-    private static String mDataDir; // Most of the time, dataDir will be "/data/data/net.nzbget.nzbget"
+    private static String dataDir; // Most of the time, dataDir will be "/data/data/net.nzbget.nzbget"
+    private static String libDir; // Usually "/data/data/net.nzbget.nzbget/lib"
 
     public static Daemon getInstance(Context context)
     {
@@ -20,8 +21,13 @@ public class Daemon
         {
             instance = new Daemon();
         }
-        if (mDataDir == null) {
-            mDataDir = context.getApplicationInfo().dataDir;
+        if (dataDir == null)
+        {
+            dataDir = context.getApplicationInfo().dataDir;
+        }
+        if (libDir == null)
+        {
+            libDir = context.getApplicationInfo().nativeLibraryDir;
         }
         return instance;
     }
@@ -30,21 +36,20 @@ public class Daemon
 
     public Status status()
     {
-        if (! new File(mDataDir,"nzbget").exists())
+        if (! new File(dataDir,"nzbget").exists())
         {
             return Status.STATUS_NOTINSTALLED;
         }
 
-        File lockFile = new File(mDataDir, "nzbget/nzbget.lock");
+        File lockFile = new File(dataDir, "nzbget/nzbget.lock");
         if (!lockFile.exists())
         {
-            //Toast.makeText(context, lockFile.getPath() + " does not exist", Toast.LENGTH_SHORT).show();
             return Status.STATUS_STOPPED;
         }
 
         try
         {
-            Process process = Runtime.getRuntime().exec(new File(mDataDir, "xbin/ps").getPath()+" -ww");
+            Process process = Runtime.getRuntime().exec(new File(dataDir, "xbin/ps").getPath()+" -ww");
             BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = br.readLine()) != null)
@@ -67,8 +72,8 @@ public class Daemon
         boolean ok = false;
         try
         {
-            String DaemonShPath = new File(mDataDir, "lib/libdaemon.so").getPath();
-            ProcessBuilder builder = new ProcessBuilder(DaemonShPath, command, mDataDir);
+            String DaemonShPath = new File(libDir, "libdaemon.so").getPath();
+            ProcessBuilder builder = new ProcessBuilder(DaemonShPath, command, dataDir, libDir);
             builder.redirectErrorStream(true);
             Process process = builder.start();
 
