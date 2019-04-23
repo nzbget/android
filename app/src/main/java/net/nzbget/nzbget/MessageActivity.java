@@ -46,7 +46,7 @@ public class MessageActivity extends AppCompatActivity
         context.startActivity(intent);
     }
 
-    public static void showOkMessage(Context context, String title, String text, final OnClickListener click)
+    public static void showOkMessage(final Context context, final String title, String text, final OnClickListener click)
     {
         AlertDialog.Builder adb = new AlertDialog.Builder(context);
         adb.setTitle(title);
@@ -61,6 +61,13 @@ public class MessageActivity extends AppCompatActivity
                 {
                     click.onClick();
                 }
+            }
+        });
+        adb.setNeutralButton("Log", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
+                MessageActivity.showLogMessage(context, title + " Log");
             }
         });
         AlertDialog alert = adb.create();

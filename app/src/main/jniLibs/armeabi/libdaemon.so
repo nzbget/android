@@ -67,7 +67,9 @@ Stop()
 Remove()
 {
 	echo "Removing daemon"
-	$HOME/nzbget/nzbget -c $HOME/nzbget/nzbget.conf -Q || echo ""
+	echo "Stopping daemon (if it's running)"
+	$HOME/nzbget/nzbget -c $HOME/nzbget/nzbget.conf -Q || echo "OK"
+	echo "Deleting daemon directory"
 	rm -r nzbget
 }
 

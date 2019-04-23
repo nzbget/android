@@ -430,7 +430,7 @@ public class InstallActivity extends AppCompatActivity implements ActivityCompat
             {
                 if (ok)
                 {
-                    MessageActivity.showOkMessage(activity, "Installation", "NZBGet daemon has been successfully installed.",
+                    MessageActivity.showOkMessage(activity, "Daemon Installation", "NZBGet daemon has been successfully installed.",
                             new MessageActivity.OnClickListener()
                             {
                                 public void onClick()
